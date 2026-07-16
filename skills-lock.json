@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "conventional-commit": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/conventional-commit/SKILL.md",
+      "computedHash": "f29c9486cede6c7b2df0cfb0a2e4aa67446552b991bcf17d1b309e903171f03d"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
+    "mysql": {
+      "source": "planetscale/database-skills",
+      "sourceType": "github",
+      "skillPath": "skills/mysql/SKILL.md",
+      "computedHash": "a74d7d018c4a9cfe4fd6e37f8758ef03272cde3f3dc2444c4f299636f4b3d275"
+    },
+    "owasp-security": {
+      "source": "hoodini/ai-agents-skills",
+      "sourceType": "github",
+      "skillPath": "skills/owasp-security/SKILL.md",
+      "computedHash": "880d7aa73b001e7e28b9562639defeff11c073d958fe5a253eeea572539439a2"
+    },
+    "php-pro": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/php-pro/SKILL.md",
+      "computedHash": "1cd5289325d0924d6fca4f950711bc9b63d873338cf3b4acd00db62603aebeda"
+    },
+    "sql-code-review": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/sql-code-review/SKILL.md",
+      "computedHash": "ae157a0eeaa4c4712e850e85d71d25f2a53168f94011f3a08b888424f41220ee"
+    }
+  }
+}

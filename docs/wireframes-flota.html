@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframes — Sistema de Flota</title>
+<style>
+  :root{
+    --asfalto:#23282E; --fondo:#E9EBE8; --panel:#FFFFFF;
+    --vial:#F2B705; --tinta:#1B1F24; --gris:#69707A; --linea:#D8DBD6;
+    --ok:#2E7D46; --alerta:#C63C3C; --info:#2B5FA3;
+    --radio:10px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background:var(--fondo); color:var(--tinta); padding:28px 18px 60px;
+  }
+  .intro{max-width:900px; margin:0 auto 30px;}
+  .intro h1{font-size:1.5rem; letter-spacing:-.01em;}
+  .intro h1 span{color:var(--gris); font-weight:400;}
+  .intro p{color:var(--gris); margin-top:6px; font-size:.95rem; max-width:62ch;}
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(330px, 390px));
+    gap:34px; justify-content:center; max-width:1700px; margin:0 auto;
+  }
+  .frame{width:100%; max-width:390px;}
+  .phone{
+    background:var(--panel); border-radius:18px; overflow:hidden;
+    border:1px solid var(--linea); box-shadow:0 8px 28px rgba(27,31,36,.10);
+  }
+  /* Cabecera estilo cartel de ruta: franja amarilla + barra asfalto */
+  .barra{
+    background:var(--asfalto); color:#fff; padding:13px 16px 12px;
+    border-top:5px solid var(--vial);
+    display:flex; align-items:baseline; justify-content:space-between;
+  }
+  .barra h2{font-size:1.02rem; font-weight:700; letter-spacing:.02em;}
+  .barra .mod{font-size:.68rem; color:var(--vial); font-weight:700;
+    text-transform:uppercase; letter-spacing:.14em;}
+  .cuerpo{padding:16px;}
+  label{display:block; font-size:.72rem; font-weight:700; color:var(--gris);
+    text-transform:uppercase; letter-spacing:.08em; margin:13px 0 5px;}
+  label:first-child{margin-top:0;}
+  .campo{
+    width:100%; border:1.5px solid var(--linea); border-radius:var(--radio);
+    padding:11px 12px; font-size:1rem; background:#fff; color:var(--tinta);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .campo .ph{color:#A9AFB8;}
+  .campo .sel{color:var(--tinta); font-weight:600;}
+  .campo .flecha{color:#A9AFB8; font-size:.8rem;}
+  .fila{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .fila3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;}
+  /* Selector segmentado (un toque, sin desplegables) */
+  .seg{display:flex; gap:6px;}
+  .seg button{
+    flex:1; padding:10px 4px; border-radius:var(--radio); font-size:.86rem; font-weight:600;
+    border:1.5px solid var(--linea); background:#fff; color:var(--gris); cursor:pointer;
+  }
+  .seg button.on{background:var(--asfalto); border-color:var(--asfalto); color:var(--vial);}
+  /* Cálculo automático visible */
+  .auto{
+    margin-top:14px; background:#F6F3E6; border:1.5px dashed var(--vial);
+    border-radius:var(--radio); padding:11px 13px; display:flex;
+    justify-content:space-between; align-items:center;
+  }
+  .auto small{display:block; color:var(--gris); font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700;}
+  .auto strong{font-size:1.18rem; font-variant-numeric:tabular-nums;}
+  .btn{
+    width:100%; margin-top:16px; padding:14px; border:none; border-radius:var(--radio);
+    background:var(--vial); color:var(--tinta); font-size:1rem; font-weight:800;
+    letter-spacing:.02em; cursor:pointer;
+  }
+  .btn.sec{background:#fff; border:1.5px solid var(--linea); color:var(--gris); font-weight:600; margin-top:8px;}
+  /* Chips de estado tipo señal vial */
+  .chip{display:inline-block; padding:3px 9px; border-radius:6px; font-size:.7rem;
+    font-weight:800; text-transform:uppercase; letter-spacing:.05em;}
+  .chip.cartera{background:#FBF0CB; color:#8A6D00; border:1px solid var(--vial);}
+  .chip.dep{background:#E3EBF6; color:var(--info); border:1px solid #B9CCE6;}
+  .chip.rech{background:#F8E4E4; color:var(--alerta); border:1px solid #E3B6B6;}
+  /* Lista de cheques */
+  .item{border:1.5px solid var(--linea); border-radius:var(--radio); padding:11px 12px; margin-bottom:10px;}
+  .item .l1{display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;}
+  .item .num{font-weight:700; font-size:.92rem;}
+  .item .imp{font-weight:800; font-size:1.02rem; font-variant-numeric:tabular-nums;}
+  .item .l2{display:flex; justify-content:space-between; align-items:center; color:var(--gris); font-size:.8rem;}
+  .item .venc{color:var(--alerta); font-weight:700;}
+  .acciones{display:flex; gap:6px; margin-top:9px;}
+  .acciones button{
+    flex:1; padding:8px 2px; font-size:.78rem; font-weight:700; cursor:pointer;
+    border-radius:8px; border:1.5px solid var(--linea); background:#fff; color:var(--tinta);
+  }
+  .acciones button.p{border-color:var(--asfalto); background:var(--asfalto); color:var(--vial);}
+  /* Consumo (combustible): dato calculado con semáforo */
+  .consumo{display:flex; gap:8px; margin-top:14px;}
+  .consumo div{flex:1; border-radius:var(--radio); padding:9px 10px; border:1.5px solid var(--linea);}
+  .consumo small{display:block; font-size:.64rem; color:var(--gris); font-weight:700; text-transform:uppercase; letter-spacing:.07em;}
+  .consumo b{font-size:1.05rem; font-variant-numeric:tabular-nums;}
+  .consumo .malo{border-color:#E3B6B6; background:#FBF3F3;}
+  .consumo .malo b{color:var(--alerta);}
+  .nota{margin-top:12px; font-size:.83rem; color:var(--gris); line-height:1.5; padding:0 4px; max-width:390px;}
+  .nota b{color:var(--tinta);}
+  .totalbar{display:flex; justify-content:space-between; background:var(--asfalto); color:#fff;
+    padding:11px 16px; font-size:.85rem;}
+  .totalbar b{color:var(--vial); font-variant-numeric:tabular-nums;}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Wireframes — pantallas de carga <span>· maquetas de las 4 pantallas de uso diario</span></h1>
+  <p>Regla de diseño: cada carga se completa en menos de 30 segundos, con una mano, desde el celular.
+  Máximo un desplegable por pantalla; todo lo demás son botones de un toque. Lo que el sistema puede calcular, lo calcula y lo muestra al momento.</p>
+</div>
+
+<div class="grid">
+
+  <!-- ============ 1. NUEVO FLETE ============ -->
+  <div class="frame">
+    <div class="phone">
+      <div class="barra"><h2>Nuevo flete</h2><span class="mod">Fletes</span></div>
+      <div class="cuerpo">
+        <label>Camión</label>
+        <div class="seg">
+          <button class="on">AB 123 CD</button><button>AC 456 EF</button><button>AD 789 GH</button>
+        </div>
+        <label>Chofer</label>
+        <div class="seg"><button class="on">Juan</button><button>Ramón</button><button>Sergio</button></div>
+        <div class="fila">
+          <div><label>Fecha</label><div class="campo"><span class="sel">16/07/2026</span></div></div>
+          <div><label>Cliente</label><div class="campo"><span class="sel">Molinos T.</span><span class="flecha">▾</span></div></div>
+        </div>
+        <label>Destino</label>
+        <div class="campo"><span class="sel">Bs. As. — Mercado Central</span></div>
+        <div class="fila">
+          <div><label>Importe bruto</label><div class="campo"><span class="sel">$ 1.450.000</span></div></div>
+          <div><label>Viático adelantado</label><div class="campo"><span class="sel">$ 120.000</span></div></div>
+        </div>
+        <div class="auto">
+          <div><small>Comisión chofer · 15% del bruto</small><strong>$ 217.500</strong></div>
+          <span class="chip cartera">auto</span>
+        </div>
+        <button class="btn">Guardar flete</button>
+        <button class="btn sec">Guardar y cargar gastos del viaje</button>
+      </div>
+    </div>
+    <p class="nota"><b>Camión y chofer son botones, no desplegables</b>: con 3 camiones entran en una fila y se
+    eligen de un toque. La comisión se calcula sola con el % vigente y queda a la vista antes de guardar.</p>
+  </div>
+
+  <!-- ============ 2. CARGA DE COMBUSTIBLE ============ -->
+  <div class="frame">
+    <div class="phone">
+      <div class="barra"><h2>Carga de combustible</h2><span class="mod">Combustible</span></div>
+      <div class="cuerpo">
+        <label>Camión</label>
+        <div class="seg"><button>AB 123 CD</button><button class="on">AC 456 EF</button><button>AD 789 GH</button></div>
+        <label>Estación</label>
+        <div class="seg"><button class="on">YPF Ruta 9</button><button>Shell Acc. Sur</button><button>Otra…</button></div>
+        <label>Modalidad</label>
+        <div class="seg"><button class="on">Cta. corriente</button><button>Pago directo</button></div>
+        <div class="fila3">
+          <div><label>Litros</label><div class="campo"><span class="sel">380</span></div></div>
+          <div><label>Importe</label><div class="campo"><span class="sel">$ 512.000</span></div></div>
+          <div><label>Km actual</label><div class="campo"><span class="sel">412.850</span></div></div>
+        </div>
+        <div class="consumo">
+          <div><small>Este tramo</small><b>52,3 L/100</b></div>
+          <div class="malo"><small>Promedio camión</small><b>44,1 L/100 ⚠</b></div>
+        </div>
+        <button class="btn">Guardar carga</button>
+      </div>
+      <div class="totalbar"><span>Cta. cte. YPF Ruta 9 · julio</span><b>$ 2.318.000</b></div>
+    </div>
+    <p class="nota"><b>El control antirrobo pasa acá</b>: al guardar el km, el sistema compara el consumo del
+    tramo contra el promedio histórico del camión y avisa en el momento si se desvía. Abajo, el acumulado
+    de la cuenta corriente del mes para cruzar con el resumen de la estación.</p>
+  </div>
+
+  <!-- ============ 3. NUEVO CHEQUE ============ -->
+  <div class="frame">
+    <div class="phone">
+      <div class="barra"><h2>Nuevo cheque recibido</h2><span class="mod">Cheques</span></div>
+      <div class="cuerpo">
+        <label>Formato</label>
+        <div class="seg"><button class="on">Físico</button><button>ECHEQ</button></div>
+        <div class="fila">
+          <div><label>N° cheque</label><div class="campo"><span class="sel">00451208</span></div></div>
+          <div><label>Banco librador</label><div class="campo"><span class="sel">Galicia</span></div></div>
+        </div>
+        <div class="fila">
+          <div><label>Cliente</label><div class="campo"><span class="sel">Molinos T.</span><span class="flecha">▾</span></div></div>
+          <div><label>Flete (opcional)</label><div class="campo"><span class="ph">#1204 ▾</span></div></div>
+        </div>
+        <div class="fila">
+          <div><label>Importe</label><div class="campo"><span class="sel">$ 1.450.000</span></div></div>
+          <div><label>Fecha de cobro</label><div class="campo"><span class="sel">28/08/2026</span></div></div>
+        </div>
+        <div class="auto">
+          <div><small>Queda en estado</small><strong>EN CARTERA</strong></div>
+          <span class="chip cartera">42 días al cobro</span>
+        </div>
+        <button class="btn">Guardar cheque</button>
+      </div>
+    </div>
+    <p class="nota"><b>Un solo formulario, 6 campos.</b> El estado inicial lo pone el sistema; los días al cobro
+    se calculan solos. Vender, depositar o endosar se hace después, desde la lista, con un toque.</p>
+  </div>
+
+  <!-- ============ 4. CHEQUES EN CARTERA ============ -->
+  <div class="frame">
+    <div class="phone">
+      <div class="barra"><h2>Cheques en cartera</h2><span class="mod">Cheques</span></div>
+      <div class="cuerpo">
+        <div class="item">
+          <div class="l1"><span class="num">Galicia · 00451208</span><span class="imp">$ 1.450.000</span></div>
+          <div class="l2"><span>Molinos T. · flete #1204</span><span>cobro 28/08</span></div>
+          <div class="acciones">
+            <button class="p">Depositar</button><button>Vender</button><button>Endosar</button>
+          </div>
+        </div>
+        <div class="item">
+          <div class="l1"><span class="num">Macro · 00118834</span><span class="imp">$ 890.000</span></div>
+          <div class="l2"><span>Citrícola SM</span><span class="venc">cobro 18/07 · ¡en 2 días!</span></div>
+          <div class="acciones">
+            <button class="p">Depositar</button><button>Vender</button><button>Endosar</button>
+          </div>
+        </div>
+        <div class="item">
+          <div class="l1"><span class="num">ECHEQ Nación · 22-90417</span><span class="imp">$ 2.100.000</span></div>
+          <div class="l2"><span>Molinos T.</span><span><span class="chip dep">depositado</span></span></div>
+        </div>
+        <div class="item">
+          <div class="l1"><span class="num">Galicia · 00449001</span><span class="imp">$ 610.000</span></div>
+          <div class="l2"><span>Transp. Ledesma</span><span><span class="chip rech">rechazado</span></span></div>
+        </div>
+      </div>
+      <div class="totalbar"><span>En cartera (por entrar)</span><b>$ 2.340.000</b></div>
+    </div>
+    <p class="nota"><b>El cambio de estado es un toque, nunca un formulario nuevo.</b> "Depositar" pregunta solo
+    en cuál de los dos bancos; "Vender" pide financiera y neto recibido; el rechazo abre un único campo de
+    gastos/comisiones. Los vencimientos próximos se marcan en rojo solos.</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+erDiagram
+    %% ================= NUCLEO =================
+    USUARIOS {
+        int id PK
+        string usuario
+        enum rol "admin | taller | portal_pallets"
+    }
+    PARAMETROS {
+        string clave PK "pct_comision_chofer"
+        string valor
+    }
+
+    %% ================= MAESTROS =================
+    CAMIONES {
+        int id PK
+        string patente
+        int km_actual
+    }
+    CHOFERES {
+        int id PK
+        string nombre
+    }
+    CLIENTES {
+        int id PK
+        string razon_social
+        bool es_portal_pallets
+    }
+
+    %% ================= MODULO 1: FLETES =================
+    FLETES {
+        int id PK
+        date fecha
+        decimal importe_bruto
+        decimal pct_comision "copiado al crear"
+        decimal comision_chofer "sobre el bruto"
+        decimal viatico_adelanto
+    }
+    GASTOS_VIAJE {
+        int id PK
+        decimal importe
+    }
+    CATEGORIAS_GASTO {
+        int id PK
+        string nombre
+    }
+    ESTACIONES {
+        int id PK
+        bool tiene_cta_cte
+    }
+    CARGAS_COMBUSTIBLE {
+        int id PK
+        decimal litros
+        decimal importe
+        int km
+        enum modalidad "cta_cte | contado"
+    }
+    RESUMENES_ESTACION {
+        int id PK
+        string periodo
+        bool pagado
+    }
+    LIQUIDACIONES {
+        int id PK
+        string periodo
+        decimal total_comisiones
+        decimal ajuste_viaticos
+        decimal total_pagar
+    }
+
+    CAMIONES ||--o{ FLETES : realiza
+    CHOFERES ||--o{ FLETES : conduce
+    CLIENTES ||--o{ FLETES : contrata
+    FLETES ||--o{ GASTOS_VIAJE : tiene
+    CATEGORIAS_GASTO ||--o{ GASTOS_VIAJE : clasifica
+    CAMIONES ||--o{ CARGAS_COMBUSTIBLE : carga
+    ESTACIONES ||--o{ CARGAS_COMBUSTIBLE : en
+    ESTACIONES ||--o{ RESUMENES_ESTACION : emite
+    RESUMENES_ESTACION ||--o{ CARGAS_COMBUSTIBLE : concilia
+    CHOFERES ||--o{ LIQUIDACIONES : cobra
+    LIQUIDACIONES ||--o{ FLETES : agrupa
+
+    %% ================= MODULO 2: STOCK =================
+    REPUESTOS {
+        int id PK
+        enum categoria "repuesto | cubierta"
+        int stock_actual
+        int stock_minimo
+    }
+    MOVIMIENTOS_STOCK {
+        int id PK
+        enum tipo "ingreso | egreso | ajuste"
+        int cantidad
+    }
+    REPUESTOS ||--o{ MOVIMIENTOS_STOCK : mueve
+    CAMIONES ||--o{ MOVIMIENTOS_STOCK : destino
+    USUARIOS ||--o{ MOVIMIENTOS_STOCK : registra
+
+    %% ================= MODULO 3: PALLETS =================
+    REMITOS {
+        int id PK
+        int numero
+        enum tipo "recepcion | devolucion"
+        date fecha
+    }
+    PALLETS_MOVIMIENTOS {
+        int id PK
+        int sanos
+        int rotos
+        int reacondicionados
+        int separadores
+    }
+    CLIENTES ||--o{ REMITOS : "portal solo lectura"
+    REMITOS ||--|| PALLETS_MOVIMIENTOS : detalla
+
+    %% ================= MODULO 4: MANTENIMIENTO =================
+    TIPOS_SERVICE {
+        int id PK
+        string nombre
+    }
+    PLANES_MANTENIMIENTO {
+        int id PK
+        int intervalo_km "ej 30000"
+        int intervalo_meses
+    }
+    SERVICES {
+        int id PK
+        date fecha
+        int km
+        decimal costo
+    }
+    CAMIONES ||--o{ PLANES_MANTENIMIENTO : tiene
+    TIPOS_SERVICE ||--o{ PLANES_MANTENIMIENTO : define
+    CAMIONES ||--o{ SERVICES : recibe
+    TIPOS_SERVICE ||--o{ SERVICES : clasifica
+    SERVICES ||--o{ MOVIMIENTOS_STOCK : consume
+
+    %% ================= MODULO 5: CHEQUES Y TESORERIA =================
+    CUENTAS {
+        int id PK
+        enum tipo "banco | caja"
+        string nombre "2 bancos + caja"
+    }
+    FINANCIERAS {
+        int id PK
+        string nombre "varian - ABM simple"
+    }
+    CHEQUES {
+        int id PK
+        enum tipo "recibido | emitido"
+        enum formato "fisico | echeq"
+        decimal importe
+        date fecha_pago
+        enum estado "en_cartera..debitado"
+        decimal monto_neto_venta
+    }
+    CHEQUES_MOVIMIENTOS {
+        int id PK
+        string estado_nuevo
+        decimal gastos_asociados "rechazos"
+    }
+    MOVIMIENTOS_TESORERIA {
+        int id PK
+        enum tipo "ingreso | egreso"
+        decimal importe
+        enum referencia_tipo
+    }
+
+    CLIENTES ||--o{ CHEQUES : entrega
+    FLETES ||--o{ CHEQUES : cobra_con
+    FINANCIERAS ||--o{ CHEQUES : compra
+    CUENTAS ||--o{ CHEQUES : deposita_o_emite
+    CHEQUES ||--o{ CHEQUES_MOVIMIENTOS : traza
+    USUARIOS ||--o{ CHEQUES_MOVIMIENTOS : registra
+    CUENTAS ||--o{ MOVIMIENTOS_TESORERIA : mueve
+    CATEGORIAS_GASTO ||--o{ MOVIMIENTOS_TESORERIA : clasifica
+    RESUMENES_ESTACION ||--o| MOVIMIENTOS_TESORERIA : paga_con
+    LIQUIDACIONES ||--o| MOVIMIENTOS_TESORERIA : paga_con

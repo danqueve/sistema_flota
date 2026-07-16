@@ -1,0 +1,15 @@
+config/config.php
+/vendor/
+*.log
+node_modules/
+
+# Skills externos (npx skills add): fuente clonada + symlinks con ruta absoluta
+# de esta máquina, no portables. Se reinstalan con los comandos del PASO 1.2
+# del prompt maestro (o desde skills-lock.json, que sí se versiona).
+.agents/
+.claude/skills/php-pro
+.claude/skills/mysql
+.claude/skills/frontend-design
+.claude/skills/owasp-security
+.claude/skills/sql-code-review
+.claude/skills/conventional-commit
