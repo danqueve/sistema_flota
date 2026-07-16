@@ -1,0 +1,53 @@
+<?php
+
+require_once __DIR__ . '/includes/auth.php';
+
+if (estaLogueado()) {
+    header('Location: ' . urlInicioSegunRol($_SESSION['usuario_rol']));
+    exit;
+}
+
+$error = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usuario = trim($_POST['usuario'] ?? '');
+    $clave   = (string) ($_POST['clave'] ?? '');
+
+    if ($usuario !== '' && $clave !== '' && intentarLogin($usuario, $clave)) {
+        header('Location: ' . urlInicioSegunRol($_SESSION['usuario_rol']));
+        exit;
+    }
+
+    $error = 'Usuario o clave incorrectos.';
+}
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingresar — Sistema de Flota</title>
+<link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/estilo.css">
+</head>
+<body class="login-body">
+  <div class="login-tarjeta">
+    <div class="login-barra">
+      <span class="login-barra__logo">🚚</span>
+      <h1>Sistema de Flota</h1>
+    </div>
+    <form method="post" class="login-form" novalidate>
+      <?php if ($error): ?>
+        <p class="login-error"><?= htmlspecialchars($error) ?></p>
+      <?php endif; ?>
+
+      <label for="usuario">Usuario</label>
+      <input class="campo-input" type="text" id="usuario" name="usuario" autocomplete="username" required autofocus>
+
+      <label for="clave">Clave</label>
+      <input class="campo-input" type="password" id="clave" name="clave" autocomplete="current-password" required>
+
+      <button type="submit" class="btn">Ingresar</button>
+    </form>
+  </div>
+</body>
+</html>

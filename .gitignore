@@ -13,3 +13,6 @@ node_modules/
 .claude/skills/owasp-security
 .claude/skills/sql-code-review
 .claude/skills/conventional-commit
+
+# Estado interno de Claude Code (sesión), no del proyecto
+.claude/scheduled_tasks.lock
