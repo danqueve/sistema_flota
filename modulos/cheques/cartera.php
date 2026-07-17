@@ -209,7 +209,7 @@ require __DIR__ . '/tabs.php';
 ?>
   <div class="item">
     <div class="l1">
-      <span class="num"><?= htmlspecialchars($cheque['banco_librador']) ?> · <?= htmlspecialchars($cheque['numero']) ?></span>
+      <span class="num"><a href="ficha.php?id=<?= $cheque['id'] ?>"><?= htmlspecialchars($cheque['banco_librador']) ?> · <?= htmlspecialchars($cheque['numero']) ?></a></span>
       <span class="imp"><?= formatearImporte((float) $cheque['importe']) ?></span>
     </div>
     <div class="l2">

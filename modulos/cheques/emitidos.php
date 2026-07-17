@@ -200,7 +200,7 @@ require __DIR__ . '/tabs.php';
   <?php foreach ($semana['cheques'] as $cheque): ?>
     <div class="item">
       <div class="l1">
-        <span class="num"><?= htmlspecialchars($cheque['numero']) ?> · <?= htmlspecialchars($cheque['destinatario']) ?></span>
+        <span class="num"><a href="ficha.php?id=<?= $cheque['id'] ?>"><?= htmlspecialchars($cheque['numero']) ?> · <?= htmlspecialchars($cheque['destinatario']) ?></a></span>
         <span class="imp"><?= formatearImporte((float) $cheque['importe']) ?></span>
       </div>
       <div class="l2">
