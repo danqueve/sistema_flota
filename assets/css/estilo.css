@@ -67,6 +67,10 @@ a{color:inherit;}
   background:#F8E4E4; color:var(--alerta); border:1px solid #E3B6B6;
   border-radius:var(--radio); padding:9px 12px; font-size:.85rem; margin-bottom:12px;
 }
+.exito{
+  background:#E2F0E6; color:var(--ok); border:1px solid #B7D8C1;
+  border-radius:var(--radio); padding:9px 12px; font-size:.85rem; margin-bottom:12px;
+}
 
 /* ---------- Formularios ---------- */
 
