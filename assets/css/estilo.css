@@ -147,6 +147,25 @@ label:first-child{margin-top:0;}
 .acciones button.p, .acciones a.p{border-color:var(--asfalto); background:var(--asfalto); color:var(--vial);}
 .item.inactivo{opacity:.55;}
 
+/* Tarjetas grandes del portal de tarimas — entender en 3 segundos */
+.tarjetas-grandes{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px;}
+.tarjeta-grande{
+  background:var(--panel); border:1.5px solid var(--linea); border-radius:var(--radio);
+  padding:18px 14px; text-align:center;
+}
+.tarjeta-grande small{display:block; font-size:.78rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--gris); margin-bottom:8px;}
+.tarjeta-grande strong{display:block; font-size:2.4rem; font-variant-numeric:tabular-nums; line-height:1;}
+.tarjeta-grande.ok strong{color:var(--ok);}
+.tarjeta-grande.alerta strong{color:var(--alerta);}
+.tarjeta-grande.info strong{color:var(--info);}
+.tarjeta-total{
+  margin-top:14px; background:var(--asfalto); color:#fff; border-radius:var(--radio);
+  padding:16px; text-align:center;
+}
+.tarjeta-total small{display:block; font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--vial); font-weight:700; margin-bottom:4px;}
+.tarjeta-total strong{font-size:2.2rem; font-variant-numeric:tabular-nums;}
+
 /* Consumo / alertas de desvío */
 .consumo{display:flex; gap:8px; margin-top:14px;}
 .consumo div{flex:1; border-radius:var(--radio); padding:9px 10px; border:1.5px solid var(--linea);}

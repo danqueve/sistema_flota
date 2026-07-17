@@ -35,8 +35,6 @@ $rol     = $usuario['rol'] ?? null;
       <a href="<?= BASE_URL ?>/modulos/mantenimiento/index.php">Mantenimiento</a>
     <?php elseif ($rol === 'taller'): ?>
       <a href="<?= BASE_URL ?>/modulos/stock/index.php">Stock</a>
-    <?php elseif ($rol === 'portal_pallets'): ?>
-      <a href="<?= BASE_URL ?>/portal/index.php">Pallets</a>
     <?php endif; ?>
   </nav>
   <div class="app-usuario">
