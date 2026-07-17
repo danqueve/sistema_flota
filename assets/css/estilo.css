@@ -162,6 +162,8 @@ label:first-child{margin-top:0;}
   padding:11px 16px; font-size:.85rem; border-radius:var(--radio); margin-top:14px;}
 .totalbar b{color:var(--vial); font-variant-numeric:tabular-nums;}
 
+.oculto{display:none;}
+
 /* Placeholder de módulos de fases futuras */
 .placeholder-fase{
   background:var(--panel); border:1.5px dashed var(--linea); border-radius:var(--radio);
