@@ -80,6 +80,19 @@ $repuestosBajoMinimo = $pdo->query(
     'SELECT * FROM repuestos WHERE activo = 1 AND stock_actual <= stock_minimo ORDER BY nombre'
 )->fetchAll();
 
+$stockPalletsTotal = $pdo->query(
+    'SELECT COALESCE(SUM(sanos),0) AS sanos, COALESCE(SUM(rotos),0) AS rotos,
+            COALESCE(SUM(reacondicionados),0) AS reacondicionados, COALESCE(SUM(separadores),0) AS separadores
+     FROM v_pallets_stock'
+)->fetch();
+
+$ultimoRemito = $pdo->query(
+    'SELECT r.*, cl.razon_social
+     FROM remitos r
+     JOIN clientes cl ON cl.id = r.cliente_id
+     ORDER BY r.id DESC LIMIT 1'
+)->fetch();
+
 $scriptsPagina = [
     'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js',
     BASE_URL . '/assets/js/dashboard.js',
@@ -165,5 +178,25 @@ require __DIR__ . '/includes/header.php';
 <?php endif; ?>
 
 <a href="<?= BASE_URL ?>/modulos/stock/index.php" class="btn sec">Ver stock</a>
+
+<h1 class="seccion">Tarimas (pallets)</h1>
+
+<div class="consumo">
+  <div><small>Sanas</small><b><?= (int) $stockPalletsTotal['sanos'] ?></b></div>
+  <div><small>Rotas</small><b><?= (int) $stockPalletsTotal['rotos'] ?></b></div>
+  <div><small>Reac.</small><b><?= (int) $stockPalletsTotal['reacondicionados'] ?></b></div>
+  <div><small>Separ.</small><b><?= (int) $stockPalletsTotal['separadores'] ?></b></div>
+</div>
+
+<?php if ($ultimoRemito): ?>
+  <p class="nota">
+    Último remito: <a href="<?= BASE_URL ?>/modulos/pallets/detalle.php?id=<?= $ultimoRemito['id'] ?>">Nº <?= str_pad((string) $ultimoRemito['numero'], 6, '0', STR_PAD_LEFT) ?></a>
+    (<?= $ultimoRemito['tipo'] === 'recepcion' ? 'recepción' : 'devolución' ?> · <?= htmlspecialchars($ultimoRemito['razon_social']) ?> · <?= formatearFecha($ultimoRemito['fecha']) ?>)
+  </p>
+<?php else: ?>
+  <p class="nota">Todavía no hay remitos cargados.</p>
+<?php endif; ?>
+
+<a href="<?= BASE_URL ?>/modulos/pallets/nuevo.php" class="btn sec">Ver pallets</a>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
