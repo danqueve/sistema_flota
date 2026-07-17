@@ -183,3 +183,16 @@ label:first-child{margin-top:0;}
   body{background:#fff;}
   .app-contenido{max-width:none; padding:0;}
 }
+
+/* ---------- Mini-diálogos (cambio de estado de un toque) ---------- */
+dialog{
+  border:none; border-radius:var(--radio); padding:18px;
+  max-width:340px; width:90vw;
+  box-shadow:0 12px 32px rgba(27,31,36,.24);
+}
+dialog::backdrop{background:rgba(27,31,36,.5);}
+dialog h3{font-size:1rem; margin-bottom:4px;}
+dialog .btn-cerrar{
+  width:100%; margin-top:8px; padding:12px; border-radius:var(--radio);
+  border:1.5px solid var(--linea); background:#fff; color:var(--gris); font-weight:600; cursor:pointer;
+}

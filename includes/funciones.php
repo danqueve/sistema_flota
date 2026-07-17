@@ -32,3 +32,41 @@ function nombreMes(int $mes): string
 
     return $nombres[$mes] ?? '';
 }
+
+function transicionChequeRecibidoValida(string $actual, string $nuevo): bool
+{
+    $transiciones = [
+        'en_cartera' => ['depositado', 'vendido', 'endosado'],
+        'depositado' => ['acreditado', 'rechazado'],
+        'rechazado'  => ['recuperado'],
+    ];
+
+    return in_array($nuevo, $transiciones[$actual] ?? [], true);
+}
+
+function transicionChequeEmitidoValida(string $actual, string $nuevo): bool
+{
+    $transiciones = [
+        'emitido' => ['debitado', 'rechazado'],
+    ];
+
+    return in_array($nuevo, $transiciones[$actual] ?? [], true);
+}
+
+function registrarMovimientoCheque(PDO $pdo, int $chequeId, string $anterior, string $nuevo, int $usuarioId, ?float $gastos = null, ?string $obs = null): void
+{
+    $stmt = $pdo->prepare(
+        'INSERT INTO cheques_movimientos (cheque_id, estado_anterior, estado_nuevo, usuario_id, gastos_asociados, observaciones)
+         VALUES (?, ?, ?, ?, ?, ?)'
+    );
+    $stmt->execute([$chequeId, $anterior, $nuevo, $usuarioId, $gastos, $obs]);
+}
+
+function obtenerCategoriaGastoPorNombre(PDO $pdo, string $nombre): ?int
+{
+    $stmt = $pdo->prepare('SELECT id FROM categorias_gasto WHERE nombre = ? LIMIT 1');
+    $stmt->execute([$nombre]);
+    $id = $stmt->fetchColumn();
+
+    return $id !== false ? (int) $id : null;
+}

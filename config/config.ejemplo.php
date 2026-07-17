@@ -3,6 +3,11 @@
 // Copiar este archivo como config.php (ignorado por git) y completar
 // según el entorno. En WAMP local: usuario root sin clave.
 
+// El cliente opera en Tucumán; sin esto PHP usa UTC por defecto y puede
+// desincronizarse con el "hoy" de MySQL (que usa la zona del sistema) en
+// la franja 21:00-00:00 ART, rompiendo cálculos de vencimiento/período.
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'sistema_flota');
 define('DB_USER', 'root');
