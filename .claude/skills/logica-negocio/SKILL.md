@@ -28,22 +28,34 @@ Estas reglas vienen confirmadas por el cliente (`docs/planificacion-sistema-flot
 
 ## Cheques
 
-- Todo cheque (`recibido` o `emitido`) tiene un ciclo de vida por `estado`. Recibidos: `en_cartera` → `depositado` → `acreditado`/`rechazado` (o `vendido`/`endosado` directo desde cartera); `rechazado` puede pasar a `recuperado`. Emitidos: `emitido` → `debitado`/`rechazado`.
-- **Todo cambio de estado, sin excepción, genera una fila nueva en `cheques_movimientos`** con `estado_anterior`, `estado_nuevo`, `usuario_id` y fecha — es trazabilidad pedida explícitamente por el cliente, no un detalle opcional.
-- Al marcar un cheque como **rechazado**: registrar los gastos/comisiones asociados en `cheques_movimientos.gastos_asociados` y generar automáticamente un **egreso** en `movimientos_tesoreria` (categoría gastos bancarios) por ese importe.
-- Al **acreditar** o **vender** un cheque recibido: generar automáticamente un **ingreso** en `movimientos_tesoreria` (en el banco de depósito, o el neto recibido si se vendió a una financiera).
-- Cambiar de estado es una acción de un clic desde la lista (ver [[diseno-flota]]), no un formulario nuevo — como mucho pide el dato puntual que ese cambio necesita (banco al depositar, financiera + neto al vender, gastos al rechazar).
+- Todo cheque (`recibido` o `emitido`) tiene un ciclo de vida por `estado`, validado en el backend (`transicionChequeRecibidoValida()` / `transicionChequeEmitidoValida()` en `includes/funciones.php`) — cualquier transición fuera del grafo se rechaza:
+  - **Recibidos:** `en_cartera → {depositado, vendido, endosado}`; `depositado → {acreditado, rechazado}`; `rechazado → {recuperado}`.
+  - **Emitidos:** `emitido → {debitado, rechazado}`.
+- **Todo cambio de estado, sin excepción, genera una fila nueva en `cheques_movimientos`** (vía `registrarMovimientoCheque()`) con `estado_anterior`, `estado_nuevo`, `usuario_id` y fecha — es trazabilidad pedida explícitamente por el cliente, no un detalle opcional.
+- Movimientos de tesorería automáticos, misma transacción que el cambio de estado:
+  - `acreditado` → ingreso por el importe en `cuenta_deposito_id`.
+  - `vendido` → ingreso por `monto_neto_venta` (no el importe completo del cheque — la diferencia es el costo del descuento de la financiera, se muestra informativamente al cargar la venta).
+  - `rechazado` → egreso por `gastos_asociados` si los hubo, categoría "Gastos bancarios", en la cuenta donde estaba depositado (o emisora si es un cheque propio).
+  - `debitado` (cheque propio) → egreso por el importe en la cuenta emisora.
+  - `endosado` y `recuperado` **no** generan movimiento de tesorería.
+- Si un cheque recibido con `flete_id` llega a `acreditado`, `vendido` o `endosado`, ese flete pasa a `fletes.estado_cobro = 'cobrado'` — el pago del cliente quedó resuelto, más allá del costo del descuento que haya asumido la empresa.
+- Cambiar de estado es una acción de un clic desde la lista (ver [[diseno-flota]]), no un formulario nuevo — como mucho abre un mini-diálogo con el dato puntual que ese cambio necesita (cuenta al depositar, financiera + neto + cuenta destino al vender, destinatario al endosar, gastos al rechazar).
+
+## Tesorería
+
+- `v_posicion` calcula saldo actual + cheques por entrar (recibidos en cartera/depositados) + cheques por salir (emitidos pendientes) a partir de `cuentas`, `movimientos_tesoreria` y `cheques` — no se mantiene como tabla, se recalcula siempre desde el estado real.
+- Pagar una **liquidación** (`estado: cerrada → pagada`) o un **resumen de estación** (`pagado: 0 → 1`) genera su egreso en `movimientos_tesoreria` (categoría "Sueldos" y "Combustible" respectivamente) y guarda `movimiento_id` en la fila de origen — nunca se carga ese egreso a mano por separado.
+- Los movimientos manuales (alta desde `modulos/tesoreria/nuevo.php`) usan `referencia_tipo = 'otro'`; los automáticos usan `'cheque'`, `'liquidacion'`, `'resumen_estacion'` o `'stock'` con su `referencia_id`.
 
 ## Stock de repuestos
 
 - El stock nunca se edita directamente en `repuestos.stock_actual` a mano: **todo movimiento pasa por `movimientos_stock`** (`tipo`: ingreso/egreso/ajuste), y `repuestos.stock_actual` se actualiza **en la misma transacción** que inserta el movimiento. Si la actualización del stock falla, se hace `rollBack()` del movimiento también.
+- **El stock nunca puede quedar negativo**: un egreso que superaría el stock disponible se rechaza antes de guardar, mostrando cuánto hay realmente.
+- El tipo `ajuste` **no es un delta**: se pide el conteo físico real (no una cantidad a sumar/restar) y el sistema calcula la diferencia contra `stock_actual` para decidir el signo y la magnitud del movimiento guardado.
 - Un egreso de stock puede asociarse a un `camion_id` y opcionalmente a un `service_id` — eso alimenta el historial de mantenimiento (Módulo 4).
+- El rol `taller` puede ver stock y registrar movimientos, pero no entra a cheques, tesorería, ni ve montos de fletes/comisiones — verificar con `requerirRol()` en cada página nueva de estos módulos.
 
 ## Pallets (Fase 3, no implementar aún)
 
 - Solo el dueño (admin) genera movimientos (`pallets_movimientos` vía `remitos`); la empresa externa de Entre Ríos únicamente lee (rol `portal_pallets`).
 - El stock por estado (sano/roto/reacondicionado/separador) es una vista calculada (`v_pallets_stock`) a partir de recepciones menos devoluciones — no una tabla que se actualiza a mano.
-
-## Posición financiera (Fase 2, no implementar aún)
-
-- `v_posicion` calcula saldo actual + cheques por entrar (recibidos en cartera/depositados) + cheques por salir (emitidos pendientes) a partir de `cuentas`, `movimientos_tesoreria` y `cheques` — no se mantiene como tabla, se recalcula siempre desde el estado real.

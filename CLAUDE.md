@@ -8,11 +8,11 @@ Contexto de proyecto para Claude Code. Leer completo antes de escribir código.
 
 5 módulos (ver `docs/planificacion-sistema-flota.md`, fuente de verdad del proyecto):
 
-1. **Fletes y liquidación de choferes** — en construcción ahora (Fase 1).
-2. **Stock de repuestos y cubiertas** — Fase 2.
-3. **Pallets** (portal de solo lectura para una empresa de Entre Ríos) — Fase 3.
-4. **Mantenimiento de vehículos** — Fase 4.
-5. **Cheques y tesorería** — Fase 2.
+1. **Fletes y liquidación de choferes** — Fase 1, construido.
+2. **Stock de repuestos y cubiertas** — Fase 2, construido.
+3. **Pallets** (portal de solo lectura para una empresa de Entre Ríos) — Fase 3, pendiente.
+4. **Mantenimiento de vehículos** — Fase 4, pendiente.
+5. **Cheques y tesorería** — Fase 2, construido.
 
 **Roles:** `admin` (Alejandro, acceso total), `taller` (consulta stock, registra uso con autorización), `portal_pallets` (solo lectura, empresa externa). Los choferes **no tienen acceso** al sistema — todo pasa por el dueño.
 
@@ -22,6 +22,7 @@ Contexto de proyecto para Claude Code. Leer completo antes de escribir código.
 - **Base de datos:** MySQL/MariaDB (WAMP local en desarrollo; el mismo motor en el VPS de producción).
 - **Frontend:** HTML + CSS propio siguiendo los wireframes + JavaScript vanilla. Sin frameworks JS. Chart.js (desde cdnjs) solo para gráficas de consumo y facturación.
 - **Entorno local:** Windows + WAMP64, base `sistema_flota`, MySQL usuario `root` sin clave, host `localhost`.
+- **Zona horaria:** `America/Argentina/Buenos_Aires`, fijada en `config/config.php` con `date_default_timezone_set()`. Sin esto PHP cae en UTC por defecto y se desincroniza con el "hoy" de MySQL (zona del sistema) entre las 21:00 y las 00:00 hora Argentina — no la borres ni la cambies.
 - **Deploy:** VPS AlmaLinux con cPanel, vía `git pull origin main`.
 - **Idioma:** todo el código, comentarios, nombres de variables y textos de interfaz van en **español**.
 
@@ -39,10 +40,11 @@ Contexto de proyecto para Claude Code. Leer completo antes de escribir código.
 ```
 config/config.php (ignorado) + config/config.ejemplo.php (versionado)
 includes/db.php, auth.php, header.php, footer.php, funciones.php
-modulos/fletes/ combustible/ stock/ pallets/ mantenimiento/ cheques/ liquidaciones/
+modulos/fletes/ combustible/ stock/ pallets/ mantenimiento/ cheques/ tesoreria/ liquidaciones/
 portal/          ← solo lectura para la empresa de pallets
 assets/css/ assets/js/
-docs/            ← planificación, esquema SQL, wireframes (no modificar)
+database/        ← datos_semilla.sql (Fase 1) y datos_semilla_fase2.sql, reproducibles
+docs/            ← planificación, esquema SQL, wireframes, prompts de fase (no modificar)
 index.php        ← login
 ```
 
@@ -59,10 +61,14 @@ index.php        ← login
 
 - El `pct_comision` se lee de `parametros` **solo al guardar el flete** y se graba en la fila. Nunca se recalcula en vivo en reportes — los reportes siempre usan el `pct_comision` guardado en cada flete, no el parámetro actual.
 - El ajuste de viáticos = `MAX(gastos reales − viáticos adelantados, 0)`.
-- Las cargas de combustible en cuenta corriente **no mueven caja** hasta que se paga el resumen mensual de la estación (tabla `resumenes_estacion`).
-- Todo cambio de estado de un cheque genera una fila en `cheques_movimientos` (trazabilidad completa, sin excepciones).
-- El rechazo de un cheque registra sus gastos/comisiones asociados y genera un egreso en `movimientos_tesoreria`.
-- El stock se descuenta vía `movimientos_stock`, actualizando `repuestos.stock_actual` **en la misma transacción**.
+- Las cargas de combustible en cuenta corriente **no mueven caja** hasta que se paga el resumen mensual de la estación (tabla `resumenes_estacion`, pantalla `modulos/combustible/resumenes.php`).
+- **Cheques recibidos**, transiciones válidas (ver `transicionChequeRecibidoValida()` en `includes/funciones.php`): `en_cartera → {depositado, vendido, endosado}`, `depositado → {acreditado, rechazado}`, `rechazado → {recuperado}`. **Cheques emitidos** (`transicionChequeEmitidoValida()`): `emitido → {debitado, rechazado}`. Cualquier transición fuera de estos grafos se rechaza en el backend.
+- Todo cambio de estado de un cheque genera una fila en `cheques_movimientos` (trazabilidad completa, sin excepciones), vía `registrarMovimientoCheque()`.
+- Movimientos de tesorería automáticos (misma transacción que el cambio de estado): `acreditado` → ingreso por el importe en la cuenta de depósito; `vendido` → ingreso por `monto_neto_venta` (no el importe completo); `rechazado` → egreso por `gastos_asociados` si los hubo, categoría "Gastos bancarios"; `debitado` (emitido) → egreso por el importe en la cuenta emisora. `endosado` y `recuperado` no generan movimiento de tesorería.
+- Cuando un cheque recibido llega a `acreditado`, `vendido` o `endosado` y tiene `flete_id`, ese flete pasa a `estado_cobro = 'cobrado'`.
+- Pagar una liquidación o un resumen de estación genera su egreso en `movimientos_tesoreria` (categoría "Sueldos" y "Combustible" respectivamente) y guarda `movimiento_id` — no hay que cargarlo de nuevo a mano.
+- El stock se descuenta vía `movimientos_stock`, actualizando `repuestos.stock_actual` **en la misma transacción**. Nunca puede quedar negativo (se valida antes de guardar). El tipo `ajuste` no es un delta: pide el conteo físico real y el sistema calcula la diferencia contra `stock_actual`.
+- El rol `taller` puede ver y registrar movimientos de stock, pero no entra a cheques, tesorería, ni ve montos de fletes/comisiones.
 
 ## Diseño
 
@@ -79,8 +85,9 @@ Tokens extraídos de `docs/wireframes-flota.html` (diseño aprobado, no reinvent
 
 ## Fases
 
-- **Fase 1 (actual):** ABM de camiones/choferes/clientes/estaciones, fletes + comisión, gastos de viaje, combustible, listado mensual, liquidación de chofer imprimible, dashboard básico. Es lo único que se construye hasta que Alejandro apruebe.
-- **Fases 2–4 (no empezar sin aprobación):** cheques/tesorería + stock (Fase 2), pallets con portal externo (Fase 3), mantenimiento + integración GPS TrailingSat condicional (Fase 4). Dejar el menú y las carpetas preparadas, sin implementar.
+- **Fase 1 (construida):** ABM de camiones/choferes/clientes/estaciones, fletes + comisión, gastos de viaje, combustible, listado mensual, liquidación de chofer imprimible (con "marcar pagada"), dashboard con datos reales.
+- **Fase 2 (construida):** cuentas y financieras, cheques recibidos (alta, cartera con cambio de estado de un toque, ficha con historial) y emitidos (alta, compromisos futuros por semana), tesorería (posición, listado con filtros, alta manual), resúmenes de estación (con "marcar pagada"), stock de repuestos (vista rápida con buscador + movimientos, ABM separado).
+- **Fases 3–4 (no empezar sin aprobación):** pallets con portal externo (Fase 3), mantenimiento + integración GPS TrailingSat condicional (Fase 4). Dejar el menú y las carpetas preparadas, sin implementar.
 
 ## Skills del proyecto
 
