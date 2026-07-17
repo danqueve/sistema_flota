@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../includes/auth.php';
 requerirRol(['admin']);
 require_once __DIR__ . '/../../includes/funciones.php';
+require_once __DIR__ . '/../../includes/pdf_remito.php';
 
 $pdo = obtenerConexion();
 $errores = [];
@@ -167,6 +168,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($remitoId !== null) {
+            try {
+                generarYGuardarPdfRemito($pdo, $remitoId);
+            } catch (Throwable $e) {
+                // El remito ya quedó guardado; el PDF se puede reintentar desde el listado (Paso 3).
+            }
             header('Location: nuevo.php?guardado=' . $remitoId);
             exit;
         }
@@ -197,7 +203,7 @@ require __DIR__ . '/tabs.php';
   <p class="exito">
     Remito Nº <?= str_pad((string) $guardado['numero'], 6, '0', STR_PAD_LEFT) ?> guardado
     (<?= $guardado['tipo'] === 'recepcion' ? 'recepción' : 'devolución' ?> — <?= htmlspecialchars($guardado['razon_social']) ?>).
-    El PDF se arma en el próximo paso.
+    <a href="pdf.php?id=<?= $guardado['id'] ?>" target="_blank" rel="noopener">Ver PDF</a>
   </p>
 <?php endif; ?>
 
