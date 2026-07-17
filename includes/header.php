@@ -24,6 +24,7 @@ $rol     = $usuario['rol'] ?? null;
   <nav class="app-menu">
     <?php if ($rol === 'admin'): ?>
       <a href="<?= BASE_URL ?>/dashboard.php">Inicio</a>
+      <a href="<?= BASE_URL ?>/modulos/maestros/camiones.php">Maestros</a>
       <a href="<?= BASE_URL ?>/modulos/stock/index.php">Stock</a>
       <a href="<?= BASE_URL ?>/modulos/cheques/index.php">Cheques</a>
       <a href="<?= BASE_URL ?>/modulos/pallets/index.php">Pallets</a>

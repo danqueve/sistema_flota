@@ -4,6 +4,8 @@
 -- hasheada (ver includes/ o el script de alta puntual).
 -- ============================================================
 
+SET NAMES utf8mb4;
+
 INSERT INTO camiones (patente, marca, modelo, anio, km_actual) VALUES
 ('AB 123 CD', 'Scania', 'G 360', 2019, 385200),
 ('AC 456 EF', 'Volvo', 'FH 460', 2018, 412850),
