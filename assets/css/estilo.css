@@ -176,3 +176,10 @@ label:first-child{margin-top:0;}
 @media (min-width:480px){
   .app-contenido{padding:28px 20px 60px;}
 }
+
+/* ---------- Impresión (liquidaciones, remitos, etc.) ---------- */
+@media print{
+  .no-print, .app-barra, .app-pie{display:none !important;}
+  body{background:#fff;}
+  .app-contenido{max-width:none; padding:0;}
+}

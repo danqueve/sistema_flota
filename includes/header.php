@@ -26,6 +26,7 @@ $rol     = $usuario['rol'] ?? null;
       <a href="<?= BASE_URL ?>/dashboard.php">Inicio</a>
       <a href="<?= BASE_URL ?>/modulos/fletes/listado.php">Fletes</a>
       <a href="<?= BASE_URL ?>/modulos/combustible/nuevo.php">Combustible</a>
+      <a href="<?= BASE_URL ?>/modulos/liquidaciones/nueva.php">Liquidaciones</a>
       <a href="<?= BASE_URL ?>/modulos/maestros/camiones.php">Maestros</a>
       <a href="<?= BASE_URL ?>/modulos/stock/index.php">Stock</a>
       <a href="<?= BASE_URL ?>/modulos/cheques/index.php">Cheques</a>
