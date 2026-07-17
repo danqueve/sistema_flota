@@ -38,7 +38,8 @@ INSERT INTO categorias_gasto (nombre, ambito) VALUES
 ('Peaje', 'viaje'),
 ('Sueldos', 'general'),
 ('Repuestos', 'general'),
-('Gastos bancarios', 'general');
+('Gastos bancarios', 'general'),
+('Combustible', 'general');
 
 INSERT INTO tipos_service (nombre) VALUES
 ('Cambio de aceite'),

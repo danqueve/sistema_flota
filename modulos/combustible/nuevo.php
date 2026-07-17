@@ -237,6 +237,8 @@ require __DIR__ . '/../../includes/header.php';
 
 <p class="nota"><b>El control antirrobo pasa acá</b>: al guardar el km, el sistema compara el consumo del tramo contra el promedio histórico del camión y avisa en el momento si se desvía.</p>
 
+<a href="resumenes.php" class="btn sec">Resúmenes de estación</a>
+
 <script>
   window.STATS_CAMION = <?= json_encode($statsCamion, JSON_NUMERIC_CHECK) ?>;
   window.ACUMULADO_ESTACION = <?= json_encode($acumuladoEstacion, JSON_NUMERIC_CHECK) ?>;

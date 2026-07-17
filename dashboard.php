@@ -63,6 +63,23 @@ foreach ($porCamion as $camionId => $valoresPorFecha) {
 }
 $labelsGrafico = array_map('formatearFecha', $fechas);
 
+// Cheques recibidos en cartera/depositados que vencen dentro de 7 días (o ya vencidos).
+$stmt = $pdo->query(
+    "SELECT ch.*, cl.razon_social
+     FROM cheques ch
+     LEFT JOIN clientes cl ON cl.id = ch.cliente_id
+     WHERE ch.tipo = 'recibido' AND ch.estado IN ('en_cartera','depositado')
+       AND ch.fecha_pago <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+     ORDER BY ch.fecha_pago ASC"
+);
+$chequesPorVencer = $stmt->fetchAll();
+
+$posicion = $pdo->query('SELECT * FROM v_posicion')->fetch();
+
+$repuestosBajoMinimo = $pdo->query(
+    'SELECT * FROM repuestos WHERE activo = 1 AND stock_actual <= stock_minimo ORDER BY nombre'
+)->fetchAll();
+
 $scriptsPagina = [
     'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js',
     BASE_URL . '/assets/js/dashboard.js',
@@ -100,10 +117,53 @@ require __DIR__ . '/includes/header.php';
   </script>
 <?php endif; ?>
 
-<h1 class="seccion">Cheques próximos a vencer</h1>
-<div class="placeholder-fase">
-  <span class="chip cartera">Fase 2</span>
-  <p>Las alertas de vencimiento de cheques se activan cuando se construya el módulo de Cheques y tesorería.</p>
+<h1 class="seccion">Posición de tesorería</h1>
+
+<div class="consumo">
+  <div><small>Saldo actual</small><b><?= formatearImporte((float) $posicion['saldo_actual']) ?></b></div>
+  <div><small>Por entrar</small><b><?= formatearImporte((float) $posicion['por_entrar']) ?></b></div>
+  <div><small>Por salir</small><b><?= formatearImporte((float) $posicion['por_salir']) ?></b></div>
 </div>
+<a href="<?= BASE_URL ?>/modulos/tesoreria/listado.php" class="btn sec">Ver tesorería</a>
+
+<h1 class="seccion">Cheques próximos a vencer</h1>
+
+<?php foreach ($chequesPorVencer as $cheque):
+    $vencido = $cheque['fecha_pago'] < date('Y-m-d');
+?>
+  <div class="item">
+    <div class="l1">
+      <span class="num"><?= htmlspecialchars($cheque['banco_librador']) ?> · <?= htmlspecialchars($cheque['numero']) ?></span>
+      <span class="imp"><?= formatearImporte((float) $cheque['importe']) ?></span>
+    </div>
+    <div class="l2">
+      <span><?= htmlspecialchars($cheque['razon_social'] ?? 'Sin cliente') ?></span>
+      <span class="venc">cobro <?= formatearFecha($cheque['fecha_pago']) ?><?= $vencido ? ' · ¡vencido!' : '' ?></span>
+    </div>
+  </div>
+<?php endforeach; ?>
+
+<?php if (!$chequesPorVencer): ?>
+  <p class="nota">No hay cheques venciendo en los próximos 7 días.</p>
+<?php endif; ?>
+
+<a href="<?= BASE_URL ?>/modulos/cheques/cartera.php" class="btn sec">Ver todos los cheques</a>
+
+<h1 class="seccion">Repuestos bajo mínimo</h1>
+
+<?php foreach ($repuestosBajoMinimo as $repuesto): ?>
+  <div class="item">
+    <div class="l1">
+      <span class="num"><?= htmlspecialchars($repuesto['nombre']) ?></span>
+      <span class="venc"><?= (int) $repuesto['stock_actual'] ?> / mín. <?= (int) $repuesto['stock_minimo'] ?></span>
+    </div>
+  </div>
+<?php endforeach; ?>
+
+<?php if (!$repuestosBajoMinimo): ?>
+  <p class="nota">Todo el stock está por encima del mínimo.</p>
+<?php endif; ?>
+
+<a href="<?= BASE_URL ?>/modulos/stock/index.php" class="btn sec">Ver stock</a>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
