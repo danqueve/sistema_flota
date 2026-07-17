@@ -18,12 +18,12 @@ Contexto de proyecto para Claude Code. Leer completo antes de escribir código.
 
 ## Stack
 
-- **Backend:** PHP 8+ puro, sin framework, procedural, funciones organizadas por módulo. Sin Composer salvo `dompdf` para PDFs (remitos, liquidaciones).
+- **Backend:** PHP 8+ puro, sin framework, procedural, funciones organizadas por módulo. Única dependencia de Composer: `dompdf/dompdf` (PDFs de remitos, Fase 3).
 - **Base de datos:** MySQL/MariaDB (WAMP local en desarrollo; el mismo motor en el VPS de producción).
 - **Frontend:** HTML + CSS propio siguiendo los wireframes + JavaScript vanilla. Sin frameworks JS. Chart.js (desde cdnjs) solo para gráficas de consumo y facturación.
 - **Entorno local:** Windows + WAMP64, base `sistema_flota`, MySQL usuario `root` sin clave, host `localhost`.
 - **Zona horaria:** `America/Argentina/Buenos_Aires`, fijada en `config/config.php` con `date_default_timezone_set()`. Sin esto PHP cae en UTC por defecto y se desincroniza con el "hoy" de MySQL (zona del sistema) entre las 21:00 y las 00:00 hora Argentina — no la borres ni la cambies.
-- **Deploy:** VPS AlmaLinux con cPanel, vía `git pull origin main`.
+- **Deploy:** VPS AlmaLinux con cPanel, vía `git pull origin main`. Desde la Fase 3, después de cada `git pull` hay que correr **`composer install`** (`/vendor/` no se versiona) y, si hay migraciones nuevas en `docs/migraciones/`, aplicarlas a mano contra la base de producción.
 - **Idioma:** todo el código, comentarios, nombres de variables y textos de interfaz van en **español**.
 
 ## Definiciones confirmadas por el cliente

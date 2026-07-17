@@ -1,0 +1,10 @@
+{
+    "name": "alejandro/sistema-flota",
+    "description": "Sistema de Gestión de Flota",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.0",
+        "dompdf/dompdf": "^3.1"
+    }
+}
