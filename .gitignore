@@ -16,3 +16,4 @@ node_modules/
 
 # Estado interno de Claude Code (sesión), no del proyecto
 .claude/scheduled_tasks.lock
+.claude/settings.json

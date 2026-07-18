@@ -23,8 +23,7 @@ if (ENTORNO === 'produccion') {
 // Red de seguridad: nunca se filtra un stack trace ni una ruta de servidor.
 set_exception_handler(function (Throwable $e): void {
     error_log('[sistema_flota] ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine());
-    http_response_code(500);
-    echo 'Ocurrió un error. Probá de nuevo en un momento.';
+    require __DIR__ . '/../error.php';
 });
 
 define('DB_HOST', 'localhost');

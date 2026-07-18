@@ -55,7 +55,18 @@ Estas reglas vienen confirmadas por el cliente (`docs/planificacion-sistema-flot
 - Un egreso de stock puede asociarse a un `camion_id` y opcionalmente a un `service_id` — eso alimenta el historial de mantenimiento (Módulo 4).
 - El rol `taller` puede ver stock y registrar movimientos, pero no entra a cheques, tesorería, ni ve montos de fletes/comisiones — verificar con `requerirRol()` en cada página nueva de estos módulos.
 
-## Pallets (Fase 3, no implementar aún)
+## Pallets
 
-- Solo el dueño (admin) genera movimientos (`pallets_movimientos` vía `remitos`); la empresa externa de Entre Ríos únicamente lee (rol `portal_pallets`).
+- Solo el dueño (admin) genera movimientos (`pallets_movimientos` vía `remitos`); la empresa externa de Entre Ríos únicamente lee (rol `portal_pallets`), en una sesión y autenticación completamente separadas del sistema interno (`portal/includes/auth_portal.php`).
 - El stock por estado (sano/roto/reacondicionado/separador) es una vista calculada (`v_pallets_stock`) a partir de recepciones menos devoluciones — no una tabla que se actualiza a mano.
+- Cada remito genera su PDF (Dompdf) replicando el talonario físico, servido siempre por un script con sesión (nunca por URL directa a un archivo).
+
+## Mantenimiento (Fase 4)
+
+- Cada plan (`planes_mantenimiento`, único por `camion_id` + `tipo_service_id`) define `intervalo_km` y/o `intervalo_meses`. **Vence lo que ocurra primero**: se calculan ambos porcentajes de intervalo restante (si el plan tiene ambos datos) y se toma el mínimo — ver `calcularVencimientosMantenimiento()` en `includes/funciones.php`, compartida entre `vencimientos.php` y el dashboard para no duplicar la lógica.
+- El **semáforo** usa el umbral `parametros.pct_alerta_service` (default 20): verde si falta más del umbral del intervalo, amarillo si queda ese % o menos, rojo si ya venció (porcentaje ≤ 0).
+- El "último service" de cada camión+tipo se determina por la fecha más reciente en `services` (no hay columna de estado ni de "vigente": se recalcula siempre desde el historial completo).
+- Si un plan se crea para un camión+tipo **sin historial previo**, hace falta un "punto de partida" (km y fecha del último service conocido): se graba como una fila real en `services` con `taller`/`costo` en `NULL` — no se agrega ninguna columna nueva al esquema para esto.
+- Un service puede asociar egresos de stock (`movimientos_stock.service_id`) que descuentan `repuestos.stock_actual` en la misma transacción, y opcionalmente un egreso en `movimientos_tesoreria` (categoría "Mantenimiento", `referencia_tipo = 'otro'` porque el enum de esquema no tiene un valor dedicado para "service").
+- `camiones.km_actual` es la fuente de verdad del odómetro: la actualiza tanto una carga de combustible con km como un service con km. Un km menor al actual nunca se acepta en silencio — requiere confirmación explícita (odómetro reemplazado o corrección de un error previo).
+- No hay integración GPS (TrailingSat no tiene API, descartado definitivamente): el kilometraje siempre sale de una carga cargada a mano.

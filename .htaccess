@@ -1,1 +1,7 @@
 Options -Indexes
+
+# Rutas absolutas desde la raíz del dominio: en local (WAMP) la app vive en
+# /sistema_flota; si en el VPS vive en la raíz del dominio, cambiar a
+# /error.php?codigo=404 y /error.php?codigo=500.
+ErrorDocument 404 /sistema_flota/error.php?codigo=404
+ErrorDocument 500 /sistema_flota/error.php?codigo=500
