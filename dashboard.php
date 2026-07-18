@@ -93,6 +93,13 @@ $ultimoRemito = $pdo->query(
      ORDER BY r.id DESC LIMIT 1'
 )->fetch();
 
+$vencimientosMantenimiento = array_values(array_filter(
+    calcularVencimientosMantenimiento($pdo),
+    function ($fila) {
+        return in_array($fila['color'], ['rojo', 'amarillo'], true);
+    }
+));
+
 $scriptsPagina = [
     'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js',
     BASE_URL . '/assets/js/dashboard.js',
@@ -198,5 +205,42 @@ require __DIR__ . '/includes/header.php';
 <?php endif; ?>
 
 <a href="<?= BASE_URL ?>/modulos/pallets/nuevo.php" class="btn sec">Ver pallets</a>
+
+<h1 class="seccion">Mantenimiento</h1>
+
+<?php foreach ($vencimientosMantenimiento as $fila):
+    $plan = $fila['plan'];
+    $chipClase = $fila['color'] === 'rojo' ? 'rech' : 'cartera';
+    $chipTexto = $fila['color'] === 'rojo' ? 'vencido' : 'por vencer';
+?>
+  <div class="item">
+    <div class="l1">
+      <span class="num"><?= htmlspecialchars($plan['patente']) ?> · <?= htmlspecialchars($plan['tipo_nombre']) ?></span>
+      <span class="chip <?= $chipClase ?>"><?= $chipTexto ?></span>
+    </div>
+    <div class="l2">
+      <?php if (isset($fila['detalles']['km'])): ?>
+        <span>
+          <?= $fila['detalles']['km']['restante'] >= 0
+                ? 'Faltan ' . number_format($fila['detalles']['km']['restante'], 0, ',', '.') . ' km'
+                : 'Vencido hace ' . number_format(abs($fila['detalles']['km']['restante']), 0, ',', '.') . ' km' ?>
+        </span>
+      <?php endif; ?>
+      <?php if (isset($fila['detalles']['fecha'])): ?>
+        <span>
+          <?= $fila['detalles']['fecha']['restante_dias'] >= 0
+                ? 'Faltan ' . $fila['detalles']['fecha']['restante_dias'] . ' días'
+                : 'Vencido hace ' . abs($fila['detalles']['fecha']['restante_dias']) . ' días' ?>
+        </span>
+      <?php endif; ?>
+    </div>
+  </div>
+<?php endforeach; ?>
+
+<?php if (!$vencimientosMantenimiento): ?>
+  <p class="nota">Todo el mantenimiento está al día.</p>
+<?php endif; ?>
+
+<a href="<?= BASE_URL ?>/modulos/mantenimiento/vencimientos.php" class="btn sec">Ver vencimientos</a>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
