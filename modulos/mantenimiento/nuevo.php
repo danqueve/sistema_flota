@@ -16,9 +16,14 @@ foreach ($camiones as $camion) {
     $kmActualPorCamion[(int) $camion['id']] = $camion['km_actual'] !== null ? (int) $camion['km_actual'] : null;
 }
 
+$camionIdPreseleccionado = (int) ($_GET['camion_id'] ?? 0);
+$tipoIdPreseleccionado   = (int) ($_GET['tipo_service_id'] ?? 0);
+$existeCamionPreseleccionado = in_array($camionIdPreseleccionado, array_column($camiones, 'id'), false);
+$existeTipoPreseleccionado   = in_array($tipoIdPreseleccionado, array_column($tipos, 'id'), false);
+
 $valores = [
-    'camion_id'       => $camiones[0]['id'] ?? '',
-    'tipo_service_id' => $tipos[0]['id'] ?? '',
+    'camion_id'       => $existeCamionPreseleccionado ? $camionIdPreseleccionado : ($camiones[0]['id'] ?? ''),
+    'tipo_service_id' => $existeTipoPreseleccionado ? $tipoIdPreseleccionado : ($tipos[0]['id'] ?? ''),
     'fecha'           => date('Y-m-d'),
     'km'              => '',
     'taller'          => '',

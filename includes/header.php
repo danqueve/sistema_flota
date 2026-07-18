@@ -32,7 +32,7 @@ $rol     = $usuario['rol'] ?? null;
       <a href="<?= BASE_URL ?>/modulos/cheques/cartera.php">Cheques</a>
       <a href="<?= BASE_URL ?>/modulos/tesoreria/listado.php">Tesorería</a>
       <a href="<?= BASE_URL ?>/modulos/pallets/nuevo.php">Pallets</a>
-      <a href="<?= BASE_URL ?>/modulos/mantenimiento/tipos.php">Mantenimiento</a>
+      <a href="<?= BASE_URL ?>/modulos/mantenimiento/vencimientos.php">Mantenimiento</a>
     <?php elseif ($rol === 'taller'): ?>
       <a href="<?= BASE_URL ?>/modulos/stock/index.php">Stock</a>
     <?php endif; ?>
