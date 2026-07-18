@@ -10,8 +10,8 @@ Contexto de proyecto para Claude Code. Leer completo antes de escribir código.
 
 1. **Fletes y liquidación de choferes** — Fase 1, construido.
 2. **Stock de repuestos y cubiertas** — Fase 2, construido.
-3. **Pallets** (portal de solo lectura para una empresa de Entre Ríos) — Fase 3, pendiente.
-4. **Mantenimiento de vehículos** — Fase 4, pendiente.
+3. **Pallets** (portal de solo lectura para una empresa de Entre Ríos) — Fase 3, construido.
+4. **Mantenimiento de vehículos** — Fase 4, en construcción.
 5. **Cheques y tesorería** — Fase 2, construido.
 
 **Roles:** `admin` (Alejandro, acceso total), `taller` (consulta stock, registra uso con autorización), `portal_pallets` (solo lectura, empresa externa). Los choferes **no tienen acceso** al sistema — todo pasa por el dueño.
@@ -87,7 +87,8 @@ Tokens extraídos de `docs/wireframes-flota.html` (diseño aprobado, no reinvent
 
 - **Fase 1 (construida):** ABM de camiones/choferes/clientes/estaciones, fletes + comisión, gastos de viaje, combustible, listado mensual, liquidación de chofer imprimible (con "marcar pagada"), dashboard con datos reales.
 - **Fase 2 (construida):** cuentas y financieras, cheques recibidos (alta, cartera con cambio de estado de un toque, ficha con historial) y emitidos (alta, compromisos futuros por semana), tesorería (posición, listado con filtros, alta manual), resúmenes de estación (con "marcar pagada"), stock de repuestos (vista rápida con buscador + movimientos, ABM separado).
-- **Fases 3–4 (no empezar sin aprobación):** pallets con portal externo (Fase 3), mantenimiento + integración GPS TrailingSat condicional (Fase 4). Dejar el menú y las carpetas preparadas, sin implementar.
+- **Fase 3 (construida):** pallets con portal externo de solo lectura para la empresa de Entre Ríos (recepción/devolución con remito en PDF, numeración correlativa, stock por vista `v_pallets_stock`, usuarios de portal con sesión propia).
+- **Fase 4 (en construcción):** mantenimiento de vehículos — tipos de service, planes por camión con intervalo km/meses, registro de service con repuestos y egreso en tesorería, historial, panel de vencimientos con semáforo. La integración GPS TrailingSat quedó descartada (el cliente confirmó que no hay API disponible): no dejar código, menús ni comentarios "preparados para GPS".
 
 ## Skills del proyecto
 

@@ -39,12 +39,13 @@ INSERT INTO categorias_gasto (nombre, ambito) VALUES
 ('Sueldos', 'general'),
 ('Repuestos', 'general'),
 ('Gastos bancarios', 'general'),
-('Combustible', 'general');
+('Combustible', 'general'),
+('Mantenimiento', 'general');
 
 INSERT INTO tipos_service (nombre) VALUES
-('Cambio de aceite'),
-('Cambio de filtros'),
+('Cambio de aceite y filtros'),
 ('Frenos'),
 ('Cubiertas'),
-('Correas'),
-('Batería');
+('Embrague'),
+('Tren delantero'),
+('Revisión general');
