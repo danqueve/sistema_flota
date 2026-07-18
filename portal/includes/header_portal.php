@@ -1,8 +1,9 @@
 <?php
 
-// La página que incluye este archivo debe haber hecho require_once
-// portal/includes/auth_portal.php y llamado requerirLoginPortal() antes.
-
+// La página que incluye este archivo debe haber llamado requerirLoginPortal()
+// antes. Se autoincluye auth_portal.php para poder servir un error prolijo
+// si alguien pidiera este archivo directo por URL, en vez de un fatal error.
+require_once __DIR__ . '/auth_portal.php';
 require_once __DIR__ . '/../../includes/datos_empresa.php';
 
 aplicarCabecerasSeguridadPortal();

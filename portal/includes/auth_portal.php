@@ -4,6 +4,14 @@ require_once __DIR__ . '/../../includes/db.php';
 
 session_name('flota_portal');
 if (session_status() === PHP_SESSION_NONE) {
+    $httpsActivo = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'secure'   => $httpsActivo,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
     session_start();
 }
 
@@ -42,6 +50,20 @@ function requerirLoginPortal(): void
         header('Location: ' . BASE_URL . '/portal/index.php');
         exit;
     }
+
+    // Revalida contra la base en cada request: si el admin desactivó esta
+    // cuenta después de emitida la sesión, se corta el acceso de inmediato
+    // en vez de esperar a que la sesión expire sola.
+    $pdo = obtenerConexion();
+    $stmt = $pdo->prepare('SELECT activo FROM usuarios_portal WHERE id = ?');
+    $stmt->execute([$_SESSION['portal_usuario_id']]);
+    $activo = $stmt->fetchColumn();
+
+    if ($activo === false || (int) $activo !== 1) {
+        cerrarSesionPortal();
+        header('Location: ' . BASE_URL . '/portal/index.php');
+        exit;
+    }
 }
 
 /**
@@ -60,6 +82,10 @@ function intentarLoginPortal(string $usuario, string $clave): array
     $fila = $stmt->fetch();
 
     if (!$fila) {
+        // Hash dummy: mismo costo de bcrypt que el camino real, para que el
+        // tiempo de respuesta no delate si el usuario existe o no.
+        password_verify($clave, '$2y$10$C7g8vC1e8s5m5x1sT0f8UOo3iM6RZ8h1a1vQd9y0kM1p8c2b7a6de');
+
         return ['ok' => false, 'mensaje' => 'Usuario o clave incorrectos.'];
     }
 
@@ -68,15 +94,23 @@ function intentarLoginPortal(string $usuario, string $clave): array
     }
 
     if (!password_verify($clave, $fila['clave_hash'])) {
-        $intentos = (int) $fila['intentos_fallidos'] + 1;
+        // Incremento atómico en la propia base (no leer-calcular-escribir en
+        // PHP): evita que solicitudes concurrentes pisen el contador y
+        // permitan más de PORTAL_MAX_INTENTOS intentos reales antes de que
+        // el bloqueo se aplique. Van en dos pasos separados porque MySQL
+        // evalúa las expresiones del SET en orden — si se compara el umbral
+        // en el mismo UPDATE que incrementa, ve el valor ya incrementado y
+        // bloquea un intento antes de lo debido.
+        $pdo->prepare('UPDATE usuarios_portal SET intentos_fallidos = intentos_fallidos + 1 WHERE id = ?')
+            ->execute([$fila['id']]);
 
-        if ($intentos >= PORTAL_MAX_INTENTOS) {
-            $stmt = $pdo->prepare(
-                'UPDATE usuarios_portal SET intentos_fallidos = ?, bloqueado_hasta = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE id = ?'
-            );
-            $stmt->execute([$intentos, PORTAL_MINUTOS_BLOQUEO, $fila['id']]);
-        } else {
-            $pdo->prepare('UPDATE usuarios_portal SET intentos_fallidos = ? WHERE id = ?')->execute([$intentos, $fila['id']]);
+        $stmt = $pdo->prepare('SELECT intentos_fallidos FROM usuarios_portal WHERE id = ?');
+        $stmt->execute([$fila['id']]);
+        $intentosActuales = (int) $stmt->fetchColumn();
+
+        if ($intentosActuales >= PORTAL_MAX_INTENTOS) {
+            $pdo->prepare('UPDATE usuarios_portal SET bloqueado_hasta = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE id = ?')
+                ->execute([PORTAL_MINUTOS_BLOQUEO, $fila['id']]);
         }
 
         return ['ok' => false, 'mensaje' => 'Usuario o clave incorrectos.'];

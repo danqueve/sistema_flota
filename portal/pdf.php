@@ -36,8 +36,8 @@ if (!$remito['pdf_generado'] || !is_file($ruta)) {
 
 $numeroFormateado = str_pad((string) $remito['numero'], 6, '0', STR_PAD_LEFT);
 
+aplicarCabecerasSeguridadPortal();
 header('Content-Type: application/pdf');
 header('Content-Disposition: inline; filename="remito_' . $numeroFormateado . '.pdf"');
 header('Content-Length: ' . filesize($ruta));
-header('X-Content-Type-Options: nosniff');
 readfile($ruta);

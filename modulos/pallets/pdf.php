@@ -36,4 +36,5 @@ header('Content-Type: application/pdf');
 header('Content-Disposition: inline; filename="remito_' . $numeroFormateado . '.pdf"');
 header('Content-Length: ' . filesize($ruta));
 header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
 readfile($ruta);
