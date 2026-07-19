@@ -2,10 +2,11 @@
 
 require_once __DIR__ . '/config/config.php';
 
-$codigo = in_array($_GET['codigo'] ?? '', ['404', '500'], true) ? $_GET['codigo'] : '500';
+$codigo = in_array($_GET['codigo'] ?? '', ['403', '404', '500'], true) ? $_GET['codigo'] : '500';
 http_response_code((int) $codigo);
 
 $textos = [
+    '403' => ['titulo' => 'No tenés permiso', 'detalle' => 'Esta pantalla no está disponible para tu usuario. Si te parece un error, avisale a Alejandro.'],
     '404' => ['titulo' => 'No encontramos esta página', 'detalle' => 'Revisá la dirección o volvé al inicio.'],
     '500' => ['titulo' => 'Ocurrió un error', 'detalle' => 'Probá de nuevo en un momento. Si el problema sigue, avisale al desarrollador.'],
 ];

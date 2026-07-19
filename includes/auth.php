@@ -46,8 +46,8 @@ function requerirRol(array $rolesPermitidos): void
     requerirLogin();
 
     if (!in_array($_SESSION['usuario_rol'], $rolesPermitidos, true)) {
-        http_response_code(403);
-        echo 'No tenés permiso para acceder a esta página.';
+        $_GET['codigo'] = '403';
+        require __DIR__ . '/../error.php';
         exit;
     }
 }
