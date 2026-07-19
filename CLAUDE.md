@@ -54,7 +54,8 @@ error.php        ← pantalla de error 404/500 (ver .htaccess y config/config.ph
 
 - PHP 8+ sin framework, estructura procedural prolija con funciones por módulo.
 - **PDO exclusivamente, siempre con prepared statements.** Nada de concatenar SQL.
-- `password_hash()` / `password_verify()` para claves. Sesión PHP con verificación de rol en cada página (`admin`, `taller`, `portal_pallets`).
+- `password_hash()` / `password_verify()` para claves. Sesión PHP con verificación de rol en cada página (`admin`, `taller`, `portal_pallets`). Login interno (`includes/auth.php`) y de portal (`portal/includes/auth_portal.php`) bloquean la cuenta 15 minutos tras 5 intentos fallidos (columnas `intentos_fallidos`/`bloqueado_hasta`, incremento atómico en dos pasos — ver comentario en el código sobre por qué no va en un solo UPDATE).
+- **CSRF: decisión consciente, no implementado.** Las mutaciones son siempre POST, protegidas por cookies `SameSite=Lax` + `HttpOnly` + `secure` dinámico (ver `session_set_cookie_params()` en ambos archivos de auth), lo que ya bloquea el envío de la cookie de sesión en un POST cross-site en navegadores modernos. Dado el perfil real del sistema — un solo usuario admin de confianza, sin exposición pública, sin HTML de terceros embebido — no se agregó un token CSRF explícito: el costo de mantenimiento (tocar cada formulario y cada acción disparada por JS) no se justifica frente a la reducción de riesgo marginal. Revisar esta decisión si el perfil de uso cambia (más de un admin, exposición pública, etc.).
 - Transacciones (`beginTransaction/commit/rollBack`) en toda operación que toque más de una tabla (flete + gastos, cheque + movimiento + tesorería, stock).
 - Todas las páginas responsive mobile-first: el cliente usa el sistema desde el celular.
 - Importes: `DECIMAL` en BD, `number_format($x, 2, ',', '.')` con prefijo `$` para mostrar. Fechas en pantalla: `d/m/Y`.
