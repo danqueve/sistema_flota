@@ -105,7 +105,7 @@ require __DIR__ . '/tabs.php';
     <div class="item">
       <div class="l1">
         <span class="num"><?= $mov['estado_anterior'] ? htmlspecialchars($mov['estado_anterior']) . ' → ' : 'Alta · ' ?><?= htmlspecialchars($mov['estado_nuevo']) ?></span>
-        <span><?= date('d/m/Y H:i', strtotime($mov['fecha'])) ?></span>
+        <span><?= formatearFechaHora($mov['fecha']) ?></span>
       </div>
       <div class="l2">
         <span><?= htmlspecialchars($mov['usuario_nombre']) ?></span>

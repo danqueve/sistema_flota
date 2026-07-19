@@ -12,6 +12,13 @@ function formatearFecha(string $fecha): string
     return $timestamp !== false ? date('d/m/Y', $timestamp) : $fecha;
 }
 
+function formatearFechaHora(string $fecha): string
+{
+    $timestamp = strtotime($fecha);
+
+    return $timestamp !== false ? date('d/m/Y H:i', $timestamp) : $fecha;
+}
+
 function obtenerParametro(string $clave, ?string $porDefecto = null): ?string
 {
     $pdo = obtenerConexion();
