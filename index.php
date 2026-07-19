@@ -13,12 +13,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = trim($_POST['usuario'] ?? '');
     $clave   = (string) ($_POST['clave'] ?? '');
 
-    if ($usuario !== '' && $clave !== '' && intentarLogin($usuario, $clave)) {
-        header('Location: ' . urlInicioSegunRol($_SESSION['usuario_rol']));
-        exit;
-    }
+    if ($usuario !== '' && $clave !== '') {
+        $resultado = intentarLogin($usuario, $clave);
 
-    $error = 'Usuario o clave incorrectos.';
+        if ($resultado['ok']) {
+            header('Location: ' . urlInicioSegunRol($_SESSION['usuario_rol']));
+            exit;
+        }
+
+        $error = $resultado['mensaje'];
+    } else {
+        $error = 'Usuario o clave incorrectos.';
+    }
 }
 ?>
 <!DOCTYPE html>

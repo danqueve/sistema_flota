@@ -13,13 +13,15 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ------------------------------------------------------------
 
 CREATE TABLE usuarios (
-  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  nombre        VARCHAR(80)  NOT NULL,
-  usuario       VARCHAR(40)  NOT NULL UNIQUE,
-  clave_hash    VARCHAR(255) NOT NULL,
-  rol           ENUM('admin','taller','portal_pallets') NOT NULL DEFAULT 'admin',
-  activo        TINYINT(1) NOT NULL DEFAULT 1,
-  creado_en     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  id                INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nombre            VARCHAR(80)  NOT NULL,
+  usuario           VARCHAR(40)  NOT NULL UNIQUE,
+  clave_hash        VARCHAR(255) NOT NULL,
+  rol               ENUM('admin','taller','portal_pallets') NOT NULL DEFAULT 'admin',
+  activo            TINYINT(1) NOT NULL DEFAULT 1,
+  intentos_fallidos TINYINT UNSIGNED NOT NULL DEFAULT 0,  -- bloqueo por fuerza bruta (ver docs/migraciones/fase4-usuarios-rate-limit.sql)
+  bloqueado_hasta   DATETIME NULL,
+  creado_en         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Parámetros globales editables (ej. comisión vigente del chofer).
