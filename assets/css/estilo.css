@@ -3,8 +3,8 @@
 
 :root{
   --asfalto:#23282E; --fondo:#E9EBE8; --panel:#FFFFFF;
-  --vial:#F2B705; --tinta:#1B1F24; --gris:#69707A; --linea:#D8DBD6;
-  --ok:#2E7D46; --alerta:#C63C3C; --info:#2B5FA3;
+  --vial:#F2B705; --tinta:#1B1F24; --gris:#646A74; --linea:#D8DBD6;
+  --ok:#2C7743; --alerta:#BC3939; --info:#2B5FA3;
   --radio:10px;
 }
 
@@ -125,7 +125,7 @@ label:first-child{margin-top:0;}
 /* Chips de estado */
 .chip{display:inline-block; padding:3px 9px; border-radius:6px; font-size:.7rem;
   font-weight:800; text-transform:uppercase; letter-spacing:.05em;}
-.chip.cartera{background:#FBF0CB; color:#8A6D00; border:1px solid var(--vial);}
+.chip.cartera{background:#FBF0CB; color:#836800; border:1px solid var(--vial);}
 .chip.dep{background:#E3EBF6; color:var(--info); border:1px solid #B9CCE6;}
 .chip.rech{background:#F8E4E4; color:var(--alerta); border:1px solid #E3B6B6;}
 .chip.ok{background:#E2F0E6; color:var(--ok); border:1px solid #B7D8C1;}

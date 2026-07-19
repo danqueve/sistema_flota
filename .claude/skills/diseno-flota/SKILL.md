@@ -16,8 +16,8 @@ Cada carga (flete, combustible, cheque) se completa en **menos de 30 segundos, c
 ```css
 :root{
   --asfalto:#23282E; --fondo:#E9EBE8; --panel:#FFFFFF;
-  --vial:#F2B705; --tinta:#1B1F24; --gris:#69707A; --linea:#D8DBD6;
-  --ok:#2E7D46; --alerta:#C63C3C; --info:#2B5FA3;
+  --vial:#F2B705; --tinta:#1B1F24; --gris:#646A74; --linea:#D8DBD6;
+  --ok:#2C7743; --alerta:#BC3939; --info:#2B5FA3;
   --radio:10px;
 }
 ```
@@ -26,6 +26,7 @@ Cada carga (flete, combustible, cheque) se completa en **menos de 30 segundos, c
 - Cabeceras de pantalla ("barra"): fondo `--asfalto`, texto blanco, franja superior de 5px `--vial`.
 - Botón primario: fondo `--vial`, texto `--tinta`, negrita.
 - Estados: `--ok` verde (acreditado/sano), `--alerta` rojo (rechazado/vencido), `--info` azul (depositado).
+- **Contraste verificado (WCAG AA, texto normal ≥4.5:1)**, fórmula de luminancia relativa aplicada a los pares realmente en uso: `--tinta` sobre `--panel`/`--fondo` ≈16.6:1/13.8:1 (sobra margen); `--gris` sobre `--panel` 5.45:1 y sobre `--fondo` 4.54:1; `--alerta` sobre `--panel` 5.55:1 y sobre `--fondo` 4.63:1 (uso en `.venc`); pares de chip — `.chip.cartera` (`#836800`/`#FBF0CB`) 4.67:1, `.chip.rech`/`.login-error` (`--alerta`/`#F8E4E4`) 4.55:1, `.chip.ok`/`.exito` (`--ok`/`#E2F0E6`) 4.66:1, `.chip.dep` (`--info`/`#E3EBF6`) 5.35:1. `--gris`, `--alerta` y `--ok` y el texto de `.chip.cartera` se oscurecieron levemente (~5%) respecto a la paleta original del wireframe para cruzar el umbral de 4.5:1 sin cambiar el tono ni los fondos — si se agrega un color de estado nuevo, verificar su contraste con la misma fórmula antes de darlo por bueno.
 
 ## Tipografía
 
