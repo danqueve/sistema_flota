@@ -187,14 +187,6 @@ label:first-child{margin-top:0;}
 
 .oculto{display:none;}
 
-/* Placeholder de módulos de fases futuras */
-.placeholder-fase{
-  background:var(--panel); border:1.5px dashed var(--linea); border-radius:var(--radio);
-  padding:28px 20px; text-align:center; margin-top:20px;
-}
-.placeholder-fase h1{margin:10px 0 6px; font-size:1.2rem;}
-.placeholder-fase p{color:var(--gris); font-size:.9rem;}
-
 /* ---------- Mobile-first: por encima de 390px, un poco más de aire ---------- */
 @media (min-width:480px){
   .app-contenido{padding:28px 20px 60px;}
