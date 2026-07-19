@@ -67,6 +67,10 @@ php -r "echo password_hash('tu-clave', PASSWORD_DEFAULT) . PHP_EOL;"
 
 `php database/generar_datos_demo.php` genera un mes completo de operación coherente entre los 5 módulos — fletes que se cobran con cheques, resumen de combustible pagado, repuestos consumidos en services, tarimas cuyo stock cuadra con sus remitos. Reproducible en cualquier momento (las fechas son relativas a "hoy"); **no correr contra una base con datos reales**. Guion de demostración completo en [`docs/DEMO.md`](docs/DEMO.md).
 
+## Manual de usuario
+
+[`docs/manual-usuario.html`](docs/manual-usuario.html) — guía módulo por módulo para el uso diario, pensada para el cliente final. Se abre directo en el navegador; el botón "Exportar a PDF" (o Ctrl/Cmd+P) genera un PDF con cada módulo en su propia página.
+
 ## Deploy a producción
 
 Checklist completo (VPS AlmaLinux + cPanel, pero aplicable a cualquier hosting con Apache+MySQL) en [`docs/DEPLOY.md`](docs/DEPLOY.md): Composer, configuración de entorno, esquema + migraciones, permisos de archivos, HTTPS, alta de usuarios.

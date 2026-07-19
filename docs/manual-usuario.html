@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Usuario — Sistema de Flota</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚚</text></svg>">
+<style>
+  :root{
+    --fondo:#E9EBE8; --panel:#FFFFFF; --panel-alt:#F6F3E6;
+    --asfalto:#23282E; --vial:#F2B705; --tinta:#1B1F24; --gris:#646A74; --linea:#D8DBD6;
+    --ok:#2C7743; --ok-bg:#E2F0E6; --ok-bd:#B7D8C1;
+    --alerta:#BC3939; --alerta-bg:#F8E4E4; --alerta-bd:#E3B6B6;
+    --info:#2B5FA3; --info-bg:#E3EBF6; --info-bd:#B9CCE6;
+    --amarillo-bg:#FBF0CB; --amarillo-tx:#836800;
+    --radio:10px; --sombra:0 8px 28px rgba(27,31,36,.10);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --fondo:#15181C; --panel:#20252B; --panel-alt:#2A2416;
+      --asfalto:#0E1114; --tinta:#ECEDEE; --gris:#9BA3AC; --linea:#343B42;
+      --ok:#4CAE70; --ok-bg:#173124; --ok-bd:#2C5B3E;
+      --alerta:#E2685F; --alerta-bg:#3A1E1D; --alerta-bd:#6B3532;
+      --info:#6FA1DE; --info-bg:#182A3D; --info-bd:#2C4F73;
+      --amarillo-bg:#3A2F0C; --amarillo-tx:#F2C94C;
+      --sombra:0 8px 28px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:var(--sans); background:var(--fondo); color:var(--tinta);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0;
+  }
+  .hoja{max-width:920px; margin:0 auto; padding:0 20px 80px;}
+
+  /* ---------- Portada ---------- */
+  .portada{
+    background:var(--asfalto); color:#fff; border-radius:0 0 22px 22px;
+    padding:56px 32px 40px; margin:0 0 36px; text-align:center;
+    border-bottom:6px solid var(--vial);
+  }
+  .portada__logo{font-size:2.6rem; display:block; margin-bottom:10px;}
+  .portada h1{
+    font-family:var(--serif); font-size:2.1rem; font-weight:600; letter-spacing:.01em;
+    text-wrap:balance; margin:0 0 8px;
+  }
+  .portada p{color:#C9CDD2; font-size:1rem; max-width:46ch; margin:0 auto;}
+  .portada__meta{
+    display:inline-flex; gap:18px; margin-top:22px; padding-top:18px;
+    border-top:1px solid rgba(255,255,255,.16); font-size:.78rem; color:var(--vial);
+    text-transform:uppercase; letter-spacing:.08em; font-weight:700;
+  }
+
+  .barra-imprimir{
+    position:sticky; top:12px; z-index:20; display:flex; justify-content:flex-end;
+    max-width:920px; margin:0 auto; padding:0 20px;
+  }
+  .barra-imprimir button{
+    background:var(--vial); color:var(--asfalto); border:none; border-radius:var(--radio);
+    padding:10px 18px; font-weight:700; font-size:.85rem; cursor:pointer; box-shadow:var(--sombra);
+  }
+  .barra-imprimir button:focus-visible{outline:3px solid var(--info); outline-offset:2px;}
+
+  /* ---------- Índice ---------- */
+  .indice{
+    background:var(--panel); border:1.5px solid var(--linea); border-radius:var(--radio);
+    padding:22px 26px; margin-bottom:40px; box-shadow:var(--sombra);
+  }
+  .indice h2{font-size:.78rem; text-transform:uppercase; letter-spacing:.1em; color:var(--gris); margin:0 0 14px;}
+  .indice ol{margin:0; padding-left:1.3em; columns:2; column-gap:32px;}
+  .indice li{margin-bottom:9px; break-inside:avoid;}
+  .indice a{color:var(--tinta); text-decoration:none; font-weight:600; font-size:.93rem;}
+  .indice a:hover{color:var(--info);}
+  .indice a span{color:var(--gris); font-weight:400; display:block; font-size:.8rem;}
+
+  /* ---------- Secciones ---------- */
+  .intro{margin-bottom:40px;}
+  .intro h2, .modulo h2{
+    font-family:var(--serif); font-size:1.5rem; font-weight:600; text-wrap:balance;
+  }
+  .regla-oro{
+    display:flex; gap:16px; flex-wrap:wrap; margin:20px 0 8px;
+  }
+  .regla-oro div{
+    flex:1; min-width:180px; background:var(--panel); border:1.5px solid var(--linea);
+    border-radius:var(--radio); padding:16px;
+  }
+  .regla-oro .icono{font-size:1.4rem; display:block; margin-bottom:8px;}
+  .regla-oro h3{font-size:.88rem; margin:0 0 4px;}
+  .regla-oro p{font-size:.82rem; color:var(--gris); margin:0;}
+
+  .modulo{
+    background:var(--panel); border-radius:14px; margin-bottom:34px;
+    box-shadow:var(--sombra); overflow:hidden; break-inside:avoid-page;
+  }
+  .modulo__barra{
+    background:var(--asfalto); color:#fff; padding:20px 28px 16px;
+    border-top:5px solid var(--vial); display:flex; align-items:baseline; gap:14px;
+  }
+  .modulo__num{
+    font-family:var(--serif); font-size:2rem; color:var(--vial); font-weight:600; line-height:1;
+  }
+  .modulo__barra h2{color:#fff; margin:0;}
+  .modulo__barra p{color:#C9CDD2; margin:4px 0 0; font-size:.88rem;}
+  .modulo__cuerpo{padding:8px 28px 28px;}
+
+  .feature{padding:22px 0; border-top:1px solid var(--linea);}
+  .feature:first-child{border-top:none;}
+  .feature h3{font-size:1.05rem; margin:0 0 4px;}
+  .feature .ruta{
+    display:inline-block; font-size:.72rem; color:var(--gris); background:var(--fondo);
+    border:1px solid var(--linea); border-radius:6px; padding:2px 8px; margin-bottom:10px;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  .feature p{margin:0 0 10px; max-width:68ch;}
+  .feature ol, .feature ul{margin:10px 0; padding-left:1.35em; max-width:66ch;}
+  .feature li{margin-bottom:6px;}
+  .feature .tip{
+    display:flex; gap:10px; background:var(--panel-alt); border:1.5px dashed var(--vial);
+    border-radius:var(--radio); padding:12px 14px; font-size:.86rem; margin-top:12px; max-width:66ch;
+  }
+  .feature .tip b{color:var(--tinta);}
+
+  /* ---------- Mini-mockups (mismo lenguaje visual que la app real) ---------- */
+  .demo{margin:14px 0; max-width:66ch;}
+  .demo-seg{display:flex; gap:6px; flex-wrap:wrap;}
+  .demo-seg span{
+    padding:8px 14px; border-radius:var(--radio); font-size:.82rem; font-weight:600;
+    border:1.5px solid var(--linea); color:var(--gris); background:var(--panel);
+  }
+  .demo-seg span.on{background:var(--asfalto); border-color:var(--asfalto); color:var(--vial);}
+
+  .demo-auto{
+    background:var(--panel-alt); border:1.5px dashed var(--vial); border-radius:var(--radio);
+    padding:11px 14px; display:flex; justify-content:space-between; align-items:center; font-size:.9rem;
+  }
+  .demo-auto small{display:block; color:var(--gris); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700;}
+  .demo-auto strong{font-size:1.15rem;}
+
+  .demo-chips{display:flex; gap:8px; flex-wrap:wrap;}
+  .demo-chip{
+    display:inline-block; padding:4px 10px; border-radius:6px; font-size:.68rem;
+    font-weight:800; text-transform:uppercase; letter-spacing:.05em;
+  }
+  .demo-chip.verde{background:var(--ok-bg); color:var(--ok); border:1px solid var(--ok-bd);}
+  .demo-chip.amarillo{background:var(--amarillo-bg); color:var(--amarillo-tx); border:1px solid var(--vial);}
+  .demo-chip.rojo{background:var(--alerta-bg); color:var(--alerta); border:1px solid var(--alerta-bd);}
+  .demo-chip.azul{background:var(--info-bg); color:var(--info); border:1px solid var(--info-bd);}
+
+  .demo-item{
+    border:1.5px solid var(--linea); border-radius:var(--radio); padding:11px 13px; background:var(--panel);
+  }
+  .demo-item .l1{display:flex; justify-content:space-between; font-weight:700; font-size:.92rem;}
+  .demo-item .l2{display:flex; justify-content:space-between; color:var(--gris); font-size:.8rem; margin-top:3px;}
+
+  .estados{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:.86rem; margin:14px 0; max-width:66ch;}
+  .estados .paso{
+    background:var(--fondo); border:1px solid var(--linea); border-radius:20px; padding:6px 13px; font-weight:600;
+  }
+  .estados .flecha{color:var(--gris);}
+
+  /* ---------- FAQ ---------- */
+  .faq{
+    background:var(--panel); border-radius:14px; box-shadow:var(--sombra); padding:8px 28px 20px; margin-bottom:40px;
+  }
+  .faq h2{padding-top:20px;}
+  .pregunta{padding:16px 0; border-top:1px solid var(--linea);}
+  .pregunta:first-of-type{border-top:none;}
+  .pregunta h3{font-size:.98rem; margin:0 0 5px;}
+  .pregunta p{margin:0; color:var(--gris); font-size:.9rem; max-width:66ch;}
+
+  .cierre{text-align:center; color:var(--gris); font-size:.82rem; padding:20px 0 10px;}
+
+  a{color:var(--info);}
+
+  @media (max-width:700px){
+    .indice ol{columns:1;}
+    .modulo__cuerpo{padding:4px 18px 20px;}
+    .modulo__barra{padding:18px 18px 14px;}
+    .portada{padding:44px 20px 32px;}
+  }
+
+  /* ---------- Impresión / PDF ---------- */
+  @media print{
+    body{background:#fff; color:#000;}
+    .barra-imprimir{display:none;}
+    .portada{
+      background:#fff !important; color:#000 !important; border-radius:0; border-bottom:4px solid #000;
+      page-break-after:always; padding-top:120px;
+    }
+    .portada p, .portada__meta{color:#333 !important;}
+    .modulo__barra{background:#fff !important; color:#000 !important; border-top:3px solid #000;}
+    .modulo__barra h2, .modulo__barra p{color:#000 !important;}
+    .modulo__num{color:#000 !important;}
+    .modulo{box-shadow:none; border:1px solid #ccc; page-break-before:always;}
+    .indice{box-shadow:none; border:1px solid #ccc; page-break-after:always;}
+    .faq{box-shadow:none; border:1px solid #ccc;}
+    .feature{break-inside:avoid;}
+    a{color:#000; text-decoration:underline;}
+  }
+</style>
+</head>
+<body>
+
+<div class="barra-imprimir">
+  <button onclick="window.print()">Exportar a PDF</button>
+</div>
+
+<div class="portada">
+  <span class="portada__logo">🚚</span>
+  <h1>Manual de Usuario<br>Sistema de Flota</h1>
+  <p>Guía módulo por módulo para el uso diario del sistema: fletes, stock, pallets, mantenimiento y cheques/tesorería.</p>
+  <div class="portada__meta">
+    <span>5 módulos</span>
+    <span>Uso desde el celular</span>
+    <span>Julio 2026</span>
+  </div>
+</div>
+
+<div class="hoja">
+
+  <div class="indice">
+    <h2>Contenido</h2>
+    <ol>
+      <li><a href="#empezar">Antes de empezar<span>Cómo entrar, roles, ideas generales</span></a></li>
+      <li><a href="#modulo1">1 · Fletes y liquidación<span>Viajes, combustible, choferes</span></a></li>
+      <li><a href="#modulo2">2 · Stock de repuestos<span>Repuestos y cubiertas</span></a></li>
+      <li><a href="#modulo3">3 · Pallets<span>Remitos y portal externo</span></a></li>
+      <li><a href="#modulo4">4 · Mantenimiento<span>Planes, services, vencimientos</span></a></li>
+      <li><a href="#modulo5">5 · Cheques y tesorería<span>Cartera, emitidos, posición</span></a></li>
+      <li><a href="#dashboard">Pantalla de inicio<span>Todo de un vistazo</span></a></li>
+      <li><a href="#faq">Preguntas frecuentes<span>Dudas comunes del día a día</span></a></li>
+    </ol>
+  </div>
+
+  <div class="intro" id="empezar">
+    <h2>Antes de empezar</h2>
+    <p>Entrás con la dirección web que te haya pasado Alejandro, tu usuario y tu clave. Según tu rol vas a ver distintas cosas:</p>
+    <ul>
+      <li><b>Administrador</b> (el dueño): ve y carga todo — fletes, stock, pallets, mantenimiento, cheques y tesorería.</li>
+      <li><b>Taller</b>: entra directo a Stock, puede consultar repuestos y registrar el uso de un repuesto en un camión. No ve montos de fletes, comisiones, cheques ni tesorería.</li>
+      <li><b>Portal externo</b> (solo para la empresa de pallets): entra por una dirección aparte, solo puede ver su propio stock de tarimas y sus remitos. No ve nada más del sistema.</li>
+    </ul>
+    <p>El sistema está pensado para cargarse desde el celular, con el pulgar, en menos de 30 segundos por carga. Algunas ideas que se repiten en todas las pantallas:</p>
+    <div class="regla-oro">
+      <div>
+        <span class="icono">👆</span>
+        <h3>Botones, no listas</h3>
+        <p>Para elegir camión, chofer o estación tocás un botón — no hay que abrir un desplegable y buscar.</p>
+        <div class="demo demo-seg" style="margin-top:10px;">
+          <span class="on">AB 123 CD</span><span>AC 456 EF</span><span>AD 789 GH</span>
+        </div>
+      </div>
+      <div>
+        <span class="icono">🧮</span>
+        <h3>El cálculo se ve antes de guardar</h3>
+        <p>Comisión, consumo, ajuste de viáticos: el sistema lo calcula solo y te lo muestra antes de confirmar, nunca es una sorpresa después.</p>
+        <div class="demo demo-auto" style="margin-top:10px;">
+          <div><small>Comisión · 15%</small><strong>$ 61.500,00</strong></div>
+        </div>
+      </div>
+      <div>
+        <span class="icono">🚦</span>
+        <h3>Semáforo de colores</h3>
+        <p>Verde: tranquilo. Amarillo: atento, se viene. Rojo: hay que actuar ya. Se usa para vencimientos, stock mínimo y cheques.</p>
+        <div class="demo demo-chips" style="margin-top:10px;">
+          <span class="demo-chip verde">al día</span><span class="demo-chip amarillo">por vencer</span><span class="demo-chip rojo">vencido</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MÓDULO 1 ============ -->
+  <div class="modulo" id="modulo1">
+    <div class="modulo__barra">
+      <span class="modulo__num">1</span>
+      <div><h2>Fletes y liquidación de choferes</h2><p>El corazón del día a día: viajes, combustible y el cierre mensual con cada chofer.</p></div>
+    </div>
+    <div class="modulo__cuerpo">
+
+      <div class="feature">
+        <h3>Cargar un flete nuevo</h3>
+        <span class="ruta">Fletes → + Nuevo flete</span>
+        <p>Tocás el camión y el chofer (botones, un toque cada uno), elegís el cliente si corresponde, cargás origen/destino y el importe bruto acordado. Apenas escribís el importe, aparece la comisión del chofer ya calculada con el porcentaje vigente — es la misma cuenta que va a usar la liquidación de fin de mes, así que lo que ves ahí es lo que se le va a pagar.</p>
+        <ol>
+          <li>Elegí camión y chofer.</li>
+          <li>Cliente, origen y destino (el cliente es opcional si es un viaje sin cliente puntual).</li>
+          <li>Importe bruto del flete y viático que le adelantaste al chofer.</li>
+          <li>Guardar flete, o "Guardar y cargar gastos del viaje" si ya tenés los comprobantes a mano.</li>
+        </ol>
+        <div class="tip"><span>💡</span><span><b>Ojo:</b> el porcentaje de comisión que se usa es el que está vigente el día que cargás el flete. Si Alejandro cambia el porcentaje general más adelante, los fletes viejos no se recalculan — quedan con el % que tenían en su momento.</span></div>
+      </div>
+
+      <div class="feature">
+        <h3>Gastos del viaje</h3>
+        <span class="ruta">Fletes → (un flete) → Gastos del viaje</span>
+        <p>Los gastos reales del viaje (peaje, playa de camiones, etc.) se cargan aparte del viático adelantado, para poder comparar uno contra el otro. El sistema te muestra los dos montos juntos en todo momento.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Listado de fletes del mes</h3>
+        <span class="ruta">Fletes → Listado</span>
+        <p>Filtrás por período, camión o chofer y ves el total facturado y de comisiones de ese recorte, además de qué fletes ya se cobraron y cuáles siguen pendientes.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Cargar combustible</h3>
+        <span class="ruta">Combustible → Nueva carga</span>
+        <p>Elegís camión y estación, y cargás litros, importe y el kilometraje del odómetro. Con ese km, el sistema calcula el consumo de ese tramo (litros cada 100 km) y lo compara contra el historial de ese camión — si el consumo se dispara respecto de lo normal, te avisa ahí mismo. Es el control pensado para detectar robos de combustible sin tener que llevar la cuenta a mano.</p>
+        <div class="tip"><span>💡</span><span>Si la estación tiene cuenta corriente, la carga no mueve caja en el momento: se acumula y se paga una vez al mes con el resumen de la estación.</span></div>
+      </div>
+
+      <div class="feature">
+        <h3>Resúmenes de estación</h3>
+        <span class="ruta">Combustible → Resúmenes</span>
+        <p>Una vez al mes cargás el importe total que informa la estación con cuenta corriente y lo marcás como pagado. Ese pago genera su egreso en Tesorería automáticamente — no hace falta cargarlo dos veces.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Liquidación mensual del chofer</h3>
+        <span class="ruta">Liquidaciones</span>
+        <p>Elegís el chofer y el período. El sistema junta todos los fletes de ese mes que todavía no se liquidaron y arma el resumen: total de comisiones, viáticos adelantados, gastos reales, y el ajuste — si el chofer gastó más de lo que le diste, se le repone la diferencia; si gastó menos, no se le reclama nada.</p>
+        <div class="demo" style="max-width:340px; margin-top:14px;">
+          <div class="demo-item">
+            <div class="l1"><span>Total a pagar</span><span>$ 195.500,00</span></div>
+            <div class="l2"><span>Comisiones $ 193.500 + ajuste $ 2.000</span></div>
+          </div>
+        </div>
+        <ol style="margin-top:14px;">
+          <li>"Cerrar liquidación": deja el período cerrado y listo para imprimir (los fletes de ese mes quedan marcados como liquidados).</li>
+          <li>"Marcar pagada": elegís de qué cuenta sale el pago y se registra el egreso en Tesorería (categoría Sueldos) sin cargarlo aparte.</li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ MÓDULO 2 ============ -->
+  <div class="modulo" id="modulo2">
+    <div class="modulo__barra">
+      <span class="modulo__num">2</span>
+      <div><h2>Stock de repuestos y cubiertas</h2><p>Qué hay, cuánto queda, y qué se usó en cada camión.</p></div>
+    </div>
+    <div class="modulo__cuerpo">
+
+      <div class="feature">
+        <h3>Buscar y consultar stock</h3>
+        <span class="ruta">Stock</span>
+        <p>Un buscador arriba y la lista de repuestos con el stock actual de cada uno. Los que están en o por debajo del mínimo definido se marcan en rojo, para verlos sin tener que revisar uno por uno.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Registrar un movimiento</h3>
+        <span class="ruta">Stock → (repuesto) → Movimiento</span>
+        <p>Tres tipos, elegidos con un botón:</p>
+        <div class="estados">
+          <span class="paso">Ingreso</span><span class="flecha">·</span>
+          <span class="paso">Egreso</span><span class="flecha">·</span>
+          <span class="paso">Ajuste</span>
+        </div>
+        <ul>
+          <li><b>Ingreso:</b> entró mercadería (compra).</li>
+          <li><b>Egreso:</b> se usó un repuesto en un camión — se elige a cuál.</li>
+          <li><b>Ajuste:</b> cuando contás el stock físico y no coincide con lo que dice el sistema. No cargás la diferencia: cargás el número real que contaste, y el sistema calcula solo cuánto había que sumar o restar.</li>
+        </ul>
+        <div class="tip"><span>💡</span><span>El stock nunca puede quedar en negativo: si pedís un egreso mayor a lo disponible, el sistema te avisa cuánto hay realmente antes de dejarte guardar.</span></div>
+      </div>
+
+      <div class="feature">
+        <h3>Alta y edición de repuestos</h3>
+        <span class="ruta">Stock → Administrar repuestos <i>(solo administrador)</i></span>
+        <p>Código, nombre, marca, con qué camiones es compatible, costo unitario y el stock mínimo que dispara la alerta.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ MÓDULO 3 ============ -->
+  <div class="modulo" id="modulo3">
+    <div class="modulo__barra">
+      <span class="modulo__num">3</span>
+      <div><h2>Pallets</h2><p>Remitos de tarimas, con un portal para que el cliente vea su propio stock.</p></div>
+    </div>
+    <div class="modulo__cuerpo">
+
+      <div class="feature">
+        <h3>Nuevo remito</h3>
+        <span class="ruta">Pallets → Nuevo remito</span>
+        <p>Elegís si es recepción (entran tarimas) o devolución (salen), la empresa, y cuántas de cada tipo: sanas, rotas, reacondicionadas y separadores. Al guardar, el sistema genera el PDF del remito con el mismo formato del talonario de papel y numeración correlativa automática.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Listado e historial</h3>
+        <span class="ruta">Pallets → Listado</span>
+        <p>Buscás remitos anteriores por fecha o empresa y volvés a descargar el PDF cuando haga falta reimprimirlo o reenviarlo.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Portal externo (para la empresa cliente)</h3>
+        <p>La empresa que recibe las tarimas entra con su propio usuario, por una dirección aparte, y ve en tarjetas grandes cuántas tarimas tiene de cada tipo en este momento, más el historial de sus remitos con los PDF descargables. Es de solo lectura: no puede cargar ni modificar nada, y no ve ningún otro dato del sistema.</p>
+        <div class="tip"><span>💡</span><span>Si la empresa necesita un usuario nuevo o cambiar la clave de uno existente, se administra desde Pallets → Usuarios del portal (solo administrador).</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ MÓDULO 4 ============ -->
+  <div class="modulo" id="modulo4">
+    <div class="modulo__barra">
+      <span class="modulo__num">4</span>
+      <div><h2>Mantenimiento de vehículos</h2><p>Planes de service por camión y un semáforo para saber qué se viene.</p></div>
+    </div>
+    <div class="modulo__cuerpo">
+
+      <div class="feature">
+        <h3>Tipos de service</h3>
+        <span class="ruta">Mantenimiento → Tipos</span>
+        <p>La lista de servicios que se hacen habitualmente (cambio de aceite y filtros, frenos, cubiertas, embrague, tren delantero, revisión general). Se administra una sola vez y después se usa para armar los planes.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Planes de mantenimiento</h3>
+        <span class="ruta">Mantenimiento → Planes</span>
+        <p>Por cada camión y tipo de service, definís cada cuántos kilómetros y/o cada cuántos meses corresponde hacerlo. Si definís los dos, el sistema avisa por el que llegue primero.</p>
+        <div class="tip"><span>💡</span><span>Si un camión nunca tuvo ese service registrado en el sistema, al crear el plan te va a pedir el <b>punto de partida</b>: el km y la fecha aproximada del último service real (aunque haya sido antes de usar el sistema), para poder calcular desde ahí el próximo vencimiento.</span></div>
+      </div>
+
+      <div class="feature">
+        <h3>Registrar un service</h3>
+        <span class="ruta">Mantenimiento → Nuevo service</span>
+        <p>Camión, tipo, fecha, kilometraje, taller y costo. Si el km que cargás es menor al que tiene registrado el camión, el sistema te pide confirmar que no es un error de tipeo (puede pasar si se cambió el tablero).</p>
+        <ol>
+          <li>Cargás los datos del service y guardás.</li>
+          <li>En la pantalla siguiente podés agregar los repuestos que se usaron, buscándolos del stock — se descuentan solos.</li>
+          <li>Si el costo implica un pago, tildás la opción de generar el egreso y elegís de qué cuenta sale.</li>
+        </ol>
+      </div>
+
+      <div class="feature">
+        <h3>Historial por camión</h3>
+        <span class="ruta">Mantenimiento → Historial</span>
+        <p>La línea de tiempo de todos los services de un camión, filtrable por tipo y por período, con el total gastado en mantenimiento.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Panel de vencimientos <span style="color:var(--gris); font-weight:400;">— la pantalla más importante del módulo</span></h3>
+        <span class="ruta">Mantenimiento → Vencimientos</span>
+        <p>Los 3 camiones con todos sus planes en una sola pantalla, ordenados por urgencia, con el semáforo de cada uno:</p>
+        <div class="demo" style="margin:14px 0;">
+          <div class="demo-item" style="margin-bottom:6px;">
+            <div class="l1"><span>AB 123 CD · Cambio de aceite y filtros</span><span class="demo-chip rojo">vencido</span></div>
+            <div class="l2"><span>Vencido hace 200 km</span></div>
+          </div>
+          <div class="demo-item">
+            <div class="l1"><span>AC 456 EF · Revisión general</span><span class="demo-chip amarillo">por vencer</span></div>
+            <div class="l2"><span>Faltan 40 días</span></div>
+          </div>
+        </div>
+        <p>Tocando "Registrar service" desde cualquier ítem, la pantalla de carga se abre con el camión y el tipo ya elegidos.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ MÓDULO 5 ============ -->
+  <div class="modulo" id="modulo5">
+    <div class="modulo__barra">
+      <span class="modulo__num">5</span>
+      <div><h2>Cheques y tesorería</h2><p>Cartera de cheques, compromisos futuros y la posición financiera del momento.</p></div>
+    </div>
+    <div class="modulo__cuerpo">
+
+      <div class="feature">
+        <h3>Cheques recibidos</h3>
+        <span class="ruta">Cheques → Cartera</span>
+        <p>Al cargar uno nuevo (banco, número, importe, fecha de cobro, y a qué flete corresponde si aplica) queda "en cartera". Desde ahí, un toque cambia el estado:</p>
+        <div class="estados">
+          <span class="paso">En cartera</span><span class="flecha">→</span>
+          <span class="paso">Depositado</span><span class="flecha">→</span>
+          <span class="paso">Acreditado</span>
+        </div>
+        <p>o directamente <b>Vendido</b> a una financiera, o <b>Endosado</b> a un proveedor. Si un cheque depositado rebota, se marca <b>Rechazado</b> (con los gastos bancarios que haya generado) y más adelante, si se cobra igual, <b>Recuperado</b>.</p>
+        <div class="tip"><span>💡</span><span>Cuando un cheque llega a Acreditado, Vendido o Endosado y tiene un flete asociado, ese flete pasa a "cobrado" solo — no hay que ir a marcarlo aparte.</span></div>
+      </div>
+
+      <div class="feature">
+        <h3>Cheques emitidos (propios)</h3>
+        <span class="ruta">Cheques → Emitidos</span>
+        <p>Cargás a quién se lo diste, importe y fecha de débito. Aparece agrupado por semana en "Compromisos futuros", para saber de un vistazo qué se viene y cuánto suma cada semana. Cuando el banco lo debita, lo marcás y se genera el egreso solo.</p>
+      </div>
+
+      <div class="feature">
+        <h3>Tesorería</h3>
+        <span class="ruta">Tesorería</span>
+        <p>La posición de un vistazo: saldo actual, lo que vas a cobrar (cheques en cartera) y lo que vas a pagar (compromisos pendientes). Debajo, el listado completo de movimientos con filtros por cuenta, tipo y período. La mayoría de los movimientos se cargan solos desde otras pantallas (cheques, liquidaciones, resúmenes, mantenimiento); si hace falta cargar algo suelto, hay un alta manual.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="intro" id="dashboard">
+    <h2>Pantalla de inicio</h2>
+    <p>Al entrar como administrador, el dashboard junta lo más importante de los 5 módulos en una sola pantalla, para no tener que ir a buscarlo:</p>
+    <ul>
+      <li>Fletes del mes por camión (cantidad, facturado, comisión).</li>
+      <li>Gráfico de consumo de combustible por camión.</li>
+      <li>Posición de tesorería (saldo, por entrar, por salir).</li>
+      <li>Cheques que vencen en los próximos 7 días.</li>
+      <li>Repuestos por debajo del stock mínimo.</li>
+      <li>Resumen de tarimas y el último remito cargado.</li>
+      <li>Semáforo de mantenimiento — solo lo vencido y lo por vencer, con link al panel completo.</li>
+    </ul>
+  </div>
+
+  <div class="faq" id="faq">
+    <h2>Preguntas frecuentes</h2>
+
+    <div class="pregunta">
+      <h3>Me equivoqué al cargar algo, ¿lo puedo corregir?</h3>
+      <p>Los datos generales (camiones, choferes, clientes, repuestos, cuentas) se pueden editar en cualquier momento desde Maestros o su propia pantalla de administración. Los movimientos ya cerrados de un mes (fletes liquidados, cheques con un estado avanzado) están pensados para no tocarse a mano, porque otras pantallas ya se calcularon en base a ellos — si necesitás corregir uno de estos, avisale a Alejandro.</p>
+    </div>
+
+    <div class="pregunta">
+      <h3>¿Qué pasa si se corta la conexión mientras estoy cargando algo?</h3>
+      <p>Cada carga que toca más de una tabla (por ejemplo, un cheque que además genera un movimiento de tesorería) se guarda como una sola operación: o se guarda todo, o no se guarda nada. No quedan cargas a medias.</p>
+    </div>
+
+    <div class="pregunta">
+      <h3>¿Por qué a veces me pide "confirmar" antes de dejarme guardar?</h3>
+      <p>Es una segunda revisión para datos que, si están mal, son difíciles de corregir después — por ejemplo, un kilometraje menor al que ya tenía el camión registrado. El sistema no te bloquea, solo te pide un toque más para confirmar que no fue un error de tipeo.</p>
+    </div>
+
+    <div class="pregunta">
+      <h3>¿El taller puede ver los montos de los fletes o cheques?</h3>
+      <p>No. El usuario de taller solo entra a Stock: puede consultar repuestos y registrar su uso, pero no tiene acceso a fletes, comisiones, cheques ni tesorería.</p>
+    </div>
+
+    <div class="pregunta">
+      <h3>¿La empresa de pallets puede ver mis otros datos?</h3>
+      <p>No. El portal externo es una puerta de entrada completamente aparte: solo muestra el stock y los remitos de esa empresa puntual, nunca fletes, cheques, stock de repuestos ni el resto del sistema.</p>
+    </div>
+
+    <div class="pregunta">
+      <h3>¿Hace falta internet para usarlo?</h3>
+      <p>Sí, es un sistema web: necesita conexión para cargar y ver datos, igual que cualquier página de internet.</p>
+    </div>
+  </div>
+
+  <p class="cierre">Sistema de Flota — cualquier duda que no esté acá, consultala directamente con Alejandro.</p>
+
+</div>
+</body>
+</html>
