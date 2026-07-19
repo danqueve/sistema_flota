@@ -17,30 +17,37 @@ $rol     = $usuario['rol'] ?? null;
 </head>
 <body>
 <header class="app-barra">
-  <div class="app-barra__marca">
-    <span class="app-barra__logo">🚚</span>
-    <span>Sistema de Flota</span>
+  <div class="app-barra__fila">
+    <div class="app-barra__marca">
+      <span class="app-barra__logo">🚚</span>
+      <span>Sistema de Flota</span>
+    </div>
+    <?php if ($usuario): ?>
+      <button type="button" class="app-menu__toggle" id="menuToggle" aria-expanded="false" aria-controls="appMenu">☰ Menú</button>
+    <?php endif; ?>
   </div>
   <?php if ($usuario): ?>
-  <nav class="app-menu">
-    <?php if ($rol === 'admin'): ?>
-      <a href="<?= BASE_URL ?>/dashboard.php">Inicio</a>
-      <a href="<?= BASE_URL ?>/modulos/fletes/listado.php">Fletes</a>
-      <a href="<?= BASE_URL ?>/modulos/combustible/nuevo.php">Combustible</a>
-      <a href="<?= BASE_URL ?>/modulos/liquidaciones/nueva.php">Liquidaciones</a>
-      <a href="<?= BASE_URL ?>/modulos/maestros/camiones.php">Maestros</a>
-      <a href="<?= BASE_URL ?>/modulos/stock/index.php">Stock</a>
-      <a href="<?= BASE_URL ?>/modulos/cheques/cartera.php">Cheques</a>
-      <a href="<?= BASE_URL ?>/modulos/tesoreria/listado.php">Tesorería</a>
-      <a href="<?= BASE_URL ?>/modulos/pallets/nuevo.php">Pallets</a>
-      <a href="<?= BASE_URL ?>/modulos/mantenimiento/vencimientos.php">Mantenimiento</a>
-    <?php elseif ($rol === 'taller'): ?>
-      <a href="<?= BASE_URL ?>/modulos/stock/index.php">Stock</a>
-    <?php endif; ?>
-  </nav>
-  <div class="app-usuario">
-    <span><?= htmlspecialchars($usuario['nombre']) ?></span>
-    <a href="<?= BASE_URL ?>/logout.php" class="app-usuario__salir">Salir</a>
+  <div class="app-menu" id="appMenu">
+    <nav class="app-menu__links">
+      <?php if ($rol === 'admin'): ?>
+        <a href="<?= BASE_URL ?>/dashboard.php">Inicio</a>
+        <a href="<?= BASE_URL ?>/modulos/fletes/listado.php">Fletes</a>
+        <a href="<?= BASE_URL ?>/modulos/combustible/nuevo.php">Combustible</a>
+        <a href="<?= BASE_URL ?>/modulos/liquidaciones/nueva.php">Liquidaciones</a>
+        <a href="<?= BASE_URL ?>/modulos/maestros/camiones.php">Maestros</a>
+        <a href="<?= BASE_URL ?>/modulos/stock/index.php">Stock</a>
+        <a href="<?= BASE_URL ?>/modulos/cheques/cartera.php">Cheques</a>
+        <a href="<?= BASE_URL ?>/modulos/tesoreria/listado.php">Tesorería</a>
+        <a href="<?= BASE_URL ?>/modulos/pallets/nuevo.php">Pallets</a>
+        <a href="<?= BASE_URL ?>/modulos/mantenimiento/vencimientos.php">Mantenimiento</a>
+      <?php elseif ($rol === 'taller'): ?>
+        <a href="<?= BASE_URL ?>/modulos/stock/index.php">Stock</a>
+      <?php endif; ?>
+    </nav>
+    <div class="app-usuario">
+      <span><?= htmlspecialchars($usuario['nombre']) ?></span>
+      <a href="<?= BASE_URL ?>/logout.php" class="app-usuario__salir">Salir</a>
+    </div>
   </div>
   <?php endif; ?>
 </header>
